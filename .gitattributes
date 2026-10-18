@@ -1,0 +1,5 @@
+# Patches and the files they touch must stay LF on every OS (Git for Windows defaults to CRLF checkouts).
+*.patch -text
+
+# Microsoft's licence texts, byte for byte (CRLF as in the release zip): checked by SHA-256 in decomp/common/host/tools/dxc_pins.py
+decomp/common/host/packaging/windows/licenses/DXC-*.txt -text

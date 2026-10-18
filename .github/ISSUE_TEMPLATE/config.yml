@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and play-testing feedback
+    url: https://github.com/THPS64Recomp/THPS3-64Recomp/discussions
+    about: Ask questions, share play-testing notes and ideas here.
+  - name: Known issues
+    url: https://github.com/THPS64Recomp/THPS3-64Recomp/blob/main/docs/KNOWN-ISSUES.md
+    about: Check what we already know about before you report a bug.

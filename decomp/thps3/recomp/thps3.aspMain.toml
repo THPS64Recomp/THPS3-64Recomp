@@ -1,0 +1,19 @@
+# RSPRecomp config for THPS3's audio microcode (libultra n_aspMain, byte-identical to THPS1's).
+# Text 0x800AF950..0x800B05B0 (0xC60 bytes; rspboot follows at 0x800B05B0); the ucode data
+# (0x800 B, identical to THPS1's) is at 0x800F81C0. The text is loaded by rspboot to IMEM 0x1080.
+# Blob offset = 0x13B70 + (0x800AF950 - 0x80016B20) = 0xAC9A0.
+# Paths are relative to this file; input/output are ROM-derived and local (build/ is gitignored):
+#   ../build/thps3.codeblob.bin   `make recomp-inputs`
+#   ../build/rsp/n_aspMain.cpp    generated
+text_offset = 0xAC9A0
+text_size = 0xC60
+text_address = 0x04001080
+rom_file_path = "../build/thps3.codeblob.bin"
+output_file_path = "../build/rsp/n_aspMain.cpp"
+output_function_name = "n_aspMain"
+# Command dispatch table (16 halfwords at DMEM 0): same as THPS1. Entry 14 is stored 0x02B0
+# (12-bit RSP PC => IMEM 0x12B0). Entries 7 and 8 are 0 (unused).
+extra_indirect_branch_targets = [
+    0x10EC, 0x139C, 0x119C, 0x1A64, 0x11C8, 0x17EC, 0x1208,
+    0x127C, 0x1348, 0x1248, 0x1C84, 0x12D4, 0x12B0, 0x1384,
+]

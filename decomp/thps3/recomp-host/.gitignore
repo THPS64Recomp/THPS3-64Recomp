@@ -1,0 +1,16 @@
+# Everything generated from the user's ROM, and all build output, stays local.
+/build/
+/run/
+*.z64
+*.n64
+*.v64
+*.bin
+*.png
+*.raw
+*.dmp
+# Fetched UI assets (fonts, icons: tools/fetch_ui_assets.sh) are never committed.
+/ui-assets/
+assets/
+*.mpk
+*.wav
+crash.log

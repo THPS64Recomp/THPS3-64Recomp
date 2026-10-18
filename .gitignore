@@ -1,0 +1,42 @@
+# Everything generated from a game dump, and all build output, stays local. Never commit any of it.
+# ROMs and anything derived from them
+*.z64
+*.n64
+*.v64
+/roms/
+baserom*
+/media/
+# generated game code, code blobs, disassembly, assets, build trees
+build/
+/run/
+RecompiledFuncs/
+asm/
+assets/
+linker_scripts/
+include/
+*.codeblob.bin
+*.bin
+*.raw
+*.dmp
+*.elf
+*.map
+*.o
+# saves, audio and image captures, logs
+*.mpk
+*.mpk.bak
+*.wav
+*.png
+crash.log
+# fetched dependencies and virtualenvs
+.deps/
+.venv/
+/lib/
+ui-assets/
+# packaging output
+*.app/
+*.zip
+SHA256SUMS
+# editors and OS
+.DS_Store
+__pycache__/
+*.pyc

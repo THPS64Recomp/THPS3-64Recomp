@@ -1,0 +1,28 @@
+# Game profile of the THPS3 recomp host (the shared host is decomp/common/host). Read by gen_versions.py (-> thps::game in
+# build/gen/thps_versions.h), the shared Python tools and the shared CMake file. Keys: decomp/common/host/README.md.
+# Facts and wording only: no ROM data.
+family        = "thps3"                     # games.toml family; the executable is thps3_recomp; config/thps3.*.toml, recipes' thps3.host.toml
+short_name    = "THPS3"
+app_name      = "THPS3 64 Recompiled"               # the macOS app bundle and its CFBundleName (no colon: macOS shows it as "/")
+product       = "THPS3-64Recomp"                    # the repository, the Windows exe in the zip, the zip prefix (<product>-v<version>-<OS>[-arch].zip)
+title         = "Tony Hawk's Pro Skater 3"
+window_title  = "Tony Hawk's Pro Skater 3 (N64 recomp)"
+config_dir    = "THPS3-64Recomp"                      # per-user folder (Application Support / %LOCALAPPDATA% / ~/.config); = product
+mod_game_id   = "thps3"                     # librecomp's --game name
+about         = "Tony Hawk's Pro Skater 3 for the N64"          # rom_check: "This app plays <about>."
+header_prefix = "THPS3"                    # ROM header name starts with this: some version of the game
+revision_note = ""          # printf format with the header revision, or ""
+menu_cursor_box_pct = [5, 75, 20, 80]       # latency.cpp: where the highlighted menu entry is (percent of the frame: x0, x1, y0, y1; the main-menu list sits at the left)
+overlays      = true                          # front-end screens are relocatable overlays in the ROM tail (hooks.cpp, overlay_recomp.py)
+b_is_flip_in_game = true                 # N64 B also flips while skating, so the controller preset drops it in a 3D view (input.cpp)
+p2_menu_mirror = true                     # 2 PLAYER > PLAYER 2 CHOOSE SKATER (and opening OPTIONS > CONTROLLER TWO) wait for port 2 only: with no second pad, port 2 mirrors port 1 in menus (gRunActive == 0; input.cpp)
+
+hud_edge_frac = 0.15                     # only a group within 15 % of an edge is anchored to it (SCORE / meter / tips at the left, the SWITCH badge and sliding letters at the right); bail letters and trick text fly through the middle
+hud_anchor_by_bounds = true               # a text string is glyph rects with no bounds rect first (its first glyph can lie left of the string's centre): anchor each group by its whole bounds (pre-scanned display list), not its first rect
+hud_placement = true                     # the HUD Placement setting (graphics.cfg `hud`) works: the host anchors the 2D layer to the picture's edges (hud_anchor.cpp)
+icon_number   = 3                          # the numeral on the app icon (tools/make_app_icon.py); default: the digits of `family`
+icon_svg      = "icon.svg"                  # the hand-drawn app icon (path relative to this file); takes precedence over icon_variant, which is the procedural fallback
+icon_svg_small = "icon-small.svg"           # simplified drawing for 48 px and below (big number badge; make_app_icon.py SMALL_ICON_MAX_PX)
+icon_variant  = "deck"                    # procedural look when there is no icon_svg: deck | neon | big (previews in media/icons/); default deck
+lores_ring_clear = true                   # 320x240 frames: left/right 8 px of the colour buffer are never cleared, two of three buffers keep stale 3D there (dl_fixes.cpp)
+interp_ids_max_step = 100.0                 # interp_ids.cpp: world units a model piece may move per game frame and still be the same object (measured step of the skater: 1.5-4)

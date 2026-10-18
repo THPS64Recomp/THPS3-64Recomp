@@ -1,0 +1,5 @@
+// THPS3's own hook functions (src/thps_hooks.h; defined in the shared hooks.cpp / skip_intro_overlay.cpp), appended to the engine's
+// import table (common/host/src/game_imports.def). Kinds: see that file.
+THPS_IMPORT(CTX, thps_skip_intro_update)
+THPS_IMPORT(CTX_RET, thps_unlock_level)
+THPS_IMPORT(CTX_RET, thps_cheat_is_on)

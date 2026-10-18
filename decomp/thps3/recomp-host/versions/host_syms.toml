@@ -1,0 +1,43 @@
+# The names the THPS3 host needs to know about, whatever the ROM version.
+# tools/gen_versions.py (decomp/common/gen_versions.py) gives every code class one entry per name in
+# build/gen/thps_versions.h (struct thps::SymTable); a class that lacks a name FAILS THE BUILD. The host
+# reads thps::sym().Name, never a literal address. Adding a version never edits host source: it supplies
+# the addresses for these names (versions/<class>/). Design: docs/internals/versions.md.
+
+# Function names forced onto the class's symbol file by decomp/common/gen_host_syms.py
+# (hook targets, runtime-replaced libultra). Set equal to the [force] names of every class.
+funcs = [
+    "Boot_Entry", "Boot_Main", "Boot_PioCopy", "Erz_Unpack", "Erz_UnpackMethod2", "Erz_UnpackMethod1",
+    "thps_osSetEventMesg", "thps_osPiRawStartDma", "thps_osAiGetStatus", "thps_osContGetQuery",
+    "Cop2_GteLoad", "Pi_DmaThread", "GameEntry",
+    "View_SetFrustum", "View_ComputeCullPlanes", "MsgBox_SetText", "Level_IsSelectable", "Cheat_IsOn",
+    "Music_LoadSong",         # (player, song): the music player copies the next song over the playing one (src/music.cpp)
+]
+
+# Functions inside the front-end overlays, named by decomp/common/overlay_recomp.py from each class's
+# [overlay_force] ("overlay+0xOFFSET" = name). Hook targets only (no address: the overlay is relocatable).
+overlay_funcs = [
+    "Ovl_IntroUpdate",
+]
+
+# Addresses of game data (versions/<class>/data_syms.toml [addr]).
+addr = [
+    "gTextExpansionFound",    # "expansion pak found."
+    "gTextExpansionNotFound", # "expansion pak not found."
+    "gSControl",              # PlayStation-style pad layer: 20 SButton records of 16 bytes
+    "gSkater",                # pointer to the skater object (CBruce)
+    "gTimeScale",             # physics step word (256 = 1/30 s; every frame; Slow-Nic divides it by 4 during tricks)
+    "gRunActive",             # word: 1 only while a level run is being played (unpaused); 0 in the front end, pause and every screen over the level (src/run_state.cpp)
+    "gMusNumChannels",        # MUS library: number of channels (word)
+    "gMusChannels",           # MUS library: pointer to the channel records (304 bytes each; src/music.cpp)
+]
+
+# Struct field offsets (versions/<class>/data_syms.toml [field]): layout can differ between builds.
+field = [
+    "View_Frustum",           # View: l, r, b, t, near, far floats (glFrustum arguments)
+    "Skater_ControlPtr",      # Skater: pointer back to gSControl
+    "Skater_PhysState",
+    "Skater_RailBalance",     # Skater: rail balance (lean) word; Perfect Balance holds it at 0       # Skater: physics state word (0 ground, 1 in air)
+    "Intro_Timer",            # t2_intro screen: legal-text timer (float; skip_intro_overlay.cpp)
+    "Intro_State",            # t2_intro screen: state word (0 = legal text, 1 = logo / title)
+]

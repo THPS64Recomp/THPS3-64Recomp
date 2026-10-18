@@ -1,0 +1,48 @@
+THPS3 recomp host: third-party code and credits
+================================================
+
+This directory holds our own host code, configs and tools. No game data, no ROM bytes and no
+recompiled game code are in it (those are generated on your machine from your own dump).
+
+Code adapted from, or structured after, other projects (all GPL-3.0 or compatible):
+
+  Zelda64Recomp (https://github.com/Zelda64Recomp/Zelda64Recomp, GPL-3.0)
+    src/rt64_context.cpp   RT64 render context, derived from Zelda64Recomp's ui_renderer / rt64_render_context
+                           (as carried in RecompFrontend)
+    src/audio.cpp          queue_samples left/right handling
+    src/platform.{h,cpp}   the split between Windows, Linux and macOS (window and renderer handle, window
+    src/main.cpp           flags, DPI awareness, timeBeginPeriod, WASAPI default, per-user config folders,
+                           portable.txt) follows Zelda64Recomp's src/main/main.cpp
+    CMakeLists.txt         Windows (clang-cl) and Linux (RT64_SDL_WINDOW_VULKAN) build settings follow Zelda64Recomp's
+
+Libraries the host builds against (fetched by tools/setup_runtime.py at the pinned commits, patched by
+patches/*.patch; none of their source is stored here):
+
+  N64ModernRuntime (https://github.com/N64Recomp/N64ModernRuntime) and N64Recomp, MIT
+  RT64 (https://github.com/rt64/rt64) with plume, MIT
+  SDL2, zlib licence. On Windows the host uses the SDL2 2.26.3 that RT64 bundles.
+  Microsoft DirectX Shader Compiler: on Windows, dxcompiler.dll and dxil.dll from Microsoft's DirectXShaderCompiler
+  release v1.8.2407 (dxc_2024_07_31.zip, downloaded at build time by tools/setup_runtime.py, SHA-256 pinned) are copied
+  next to the executable (they are loaded at run time); RT64's own contrib/dxc is used only as a build tool. Their
+  licence texts ship in resources/licenses/, unchanged, from that release: DXC-dxcompiler.txt (the LLVM Release
+  License, University of Illinois/NCSA) and DXC-dxil.txt (Microsoft Software License Terms for the DirectX Shader
+  Compiler, whose "Distributable Code" section sets the terms for distributing dxil.dll in an application).
+
+In-game settings menu (THPS_MENU, on by default; src/ui/ and ui/ in the shared host):
+  Zelda64Recomp (https://github.com/Zelda64Recomp/Zelda64Recomp, GPL-3.0, commit b65c482)
+    src/ui/ui_renderer.{h,cpp}   RmlUi on RT64, from src/ui/ui_renderer.cpp (RT64:: -> plume:: namespace changes only)
+    ui/shaders/Interface{VS,PS}.hlsl  its two RmlUi shaders, unchanged
+    src/ui/ui_host.cpp           structure after src/ui/ui_state.cpp (event queue, draw hook, controller key repeat)
+    ui/menu/recomp.rcss, rml.rcss  its menu styles (compiled from its SCSS); changed: the font family (chiaro -> LatoLatin), colour alpha 0..1 -> 0..255
+    ui/menu/settings.rml         the tab/option markup follows its assets/config_menu*.rml
+    ui/menu/icons/X.svg          its close icon
+  Libraries built into the menu (fetched at pinned commits by tools/setup_runtime.py, none stored here): RmlUi 6.0 (MIT),
+    lunasvg (MIT), FreeType 2.13.3 (FreeType License / GPL-2.0; we use the FTL: portions of this software are copyright
+    The FreeType Project, www.freetype.org. All rights reserved.).
+  Fonts shipped with a THPS_MENU build (SIL Open Font License 1.1, fetched and SHA-256 checked, not stored in git; the licence text is
+    ui/FONTS-LICENSE.txt, shipped as resources/ui/fonts/LICENSE.txt): Lato (Latin subset, (c) 2011-2015 tyPoland Lukasz Dziedzic),
+    Noto Emoji ((c) Google), PromptFont (Yukari "Shinmera" Hafner; based on Xolonium by Severin Meyer).
+  NOT used: Zelda64Recomp's ChiaroNormal/ChiaroBold fonts (Fontworks Japan, commercial) and its Majora's Mask artwork.
+
+Optional launcher build (THPS3_WITH_RECOMPFRONTEND, local use only): RecompFrontend, which has no
+licence yet (N64Recomp/RecompFrontend issue #44).

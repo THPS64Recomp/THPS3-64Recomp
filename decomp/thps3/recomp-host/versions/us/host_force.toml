@@ -1,0 +1,36 @@
+# Host-forced names for code class us (THPS3 USA). Read by decomp/common/gen_host_syms.py --force; the same
+# NAMES must exist in every class (versions/host_syms.toml `funcs`), at that class's own addresses.
+# (Was decomp/common/host_force/thps3.toml before the shared host: addresses found by sigmatch THPS2 -> THPS3 / n64sym,
+# see the private development notes. The boot segment is THPS2's except 3 words, so the loader and libultra addresses are THPS2's.)
+
+splits = [0x800BA520]   # recomp_check candidate: pointed to from data (0x80017AEC, 0x8001E5C4) inside func_800BA4C8; THPS2 twin 0x800B6360
+# Fstop+0x20 (0x800D7810, libmus F-command) is split by gen_host_syms' data-pointer rule, as in THPS2.
+
+[force]
+"0x80000400" = "Boot_Entry"
+"0x80000870" = "Boot_Main"
+"0x80000AB4" = "Boot_PioCopy"
+"0x80000B1C" = "Erz_Unpack"
+"0x80000C50" = "Erz_UnpackMethod2"
+"0x80001340" = "Erz_UnpackMethod1"
+"0x80002F20" = "thps_osSetEventMesg"
+"0x80004890" = "thps_osPiRawStartDma"
+"0x80011A40" = "thps_osAiGetStatus"
+"0x800075B4" = "thps_osContGetQuery"
+"0x80045B00" = "Cop2_GteLoad"         # 6x mtc2 + 3x mfc2 (PS1 GTE leftovers): instruction patches below
+"0x800D3F04" = "Pi_DmaThread"
+"0x800BACB8" = "GameEntry"
+# Widescreen / skip intro / test aid (names are ours, by what the code does):
+"0x800C557C" = "View_SetFrustum"      # glFrustum(view, l, r, b, t, n, f): l..f at view+0x160
+"0x800C6078" = "View_ComputeCullPlanes"
+"0x800C4624" = "MsgBox_SetText"       # (box, text, ...): stores a message box's text pointer
+"0x80058114" = "Level_IsSelectable"   # (level, mode): the level select's "available?" test (THPS2: 0x800570C4)
+"0x8005900C" = "Cheat_IsOn"   # (index): the cheat-on byte (game state +0x130E + 4 * index); THPS2: 0x80058010
+"0x800D6B44" = "Music_LoadSong"   # = THPS2 USA 0x800D1E34 (same code, only the string/table addresses differ)
+
+[overlay_force]
+"t2_intro+0x18C" = "Ovl_IntroUpdate"  # the intro screen's update (legal text + logos; LOG H4)
+
+# N64Recomp config pieces (tools/gen_versions.py). The VR4300 has no COP2; these paths must be dead in practice.
+[cop2]
+patch = { Cop2_GteLoad = [0x80045D38, 0x80045D3C, 0x80045D40, 0x80045D44, 0x80045D48, 0x80045D4C, 0x80045D64, 0x80045D68, 0x80045D6C] }

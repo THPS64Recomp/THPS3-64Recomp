@@ -1,0 +1,19 @@
+# Game data addresses and struct offsets for code class us (THPS3 USA; names: versions/host_syms.toml).
+# Facts only; where each was found: the private development notes (H3 controls, H4 skip intro and the skater state, H6 widescreen).
+[addr]
+gTextExpansionFound    = 0x8001EDC8
+gTextExpansionNotFound = 0x8001EDE0
+gSControl              = 0x800EF794   # the PlayStation-style pad layer: 20 SButton records of 16 bytes
+gSkater                = 0x800EF3AC   # pointer to the skater object (CBruce)
+gRunActive             = 0x800E0D20   # 1 while a level run is played, 0 paused / front end / screens over the level (RAM diffs of play, pause, end-of-run and menu frames)
+gTimeScale             = 0x800ED870   # gPhysicsFrameTime * 7680 each frame (the frame update; Slow-Nic: / 4 while the skater does a trick)
+gMusNumChannels        = 0x80105E00   # MUS library globals: channel count; MusHandleStop 0x800D8C8C / __MusIntMain 0x800D9730 read both
+gMusChannels           = 0x80105E08   # MUS library globals: the channel records (304 bytes each)
+
+[field]
+View_Frustum      = 0x160   # l, r, b, t, near, far (floats)
+Skater_ControlPtr = 0x1780
+Skater_PhysState  = 0x1B94   # also toggles every ~48 frames with no input (LOG P3): tests treat "air" as warn-only
+Skater_RailBalance = 0x19B8   # rail lean; Cheat_IsOn(Perfect Balance) -> 0 in the rail physics
+Intro_Timer       = 0x290   # t2_intro screen: legal-text timer (float)
+Intro_State       = 0x2A0   # t2_intro screen: state word

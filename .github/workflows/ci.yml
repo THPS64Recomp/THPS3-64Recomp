@@ -1,0 +1,32 @@
+# CI for the THPS3 recomp. The checks themselves live in the shared host, THPS64Host (.github/workflows/game-ci.yml), so the three
+# games run the same CI and a fix to it lands once. This file only calls it, at the SAME tag as the decomp/common submodule: when you
+# move decomp/common to a new host release, change both `@v...` and `host-tag:` below in the same commit (the host-pin check fails
+# otherwise, and says so).
+# What it runs: the host-pin check (decomp/common is an official THPS64Host release), the RT64 patches, the version tables, and a
+# stub build with the ROM-free checks on Linux, Windows and macOS. No ROM, nothing ROM-derived. Run the same checks locally first
+# with tools/check.sh (it ends with "Ready for a PR."), and decomp/common/host/tools/mingw_check.py for a Windows compile from
+# macOS/Linux. A pull request needs nothing but this CI to pass.
+name: ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: THPS64Recomp/THPS64Host/.github/workflows/game-ci.yml@v0.1.0
+    with:
+      game: thps3
+      host-tag: v0.1.0
+    secrets:
+      # Only while the repositories are private (RELEASING.md); empty, and unused, once they are public.
+      THPS64_READ_TOKEN: ${{ secrets.THPS64_READ_TOKEN }}

@@ -1,0 +1,3 @@
+[submodule "decomp/common"]
+	path = decomp/common
+	url = https://github.com/THPS64Recomp/THPS64Host.git

@@ -1,0 +1,12 @@
+# Code classes: sets of recompiled functions (one generated payload each).
+# Every ROM version in decomp/common/games.toml names its `code_class`; versions with the same code
+# share one. THPS3 has the one dump (USA), so one class. A class is generated from one ROM:
+#   game   the games.toml row whose ROM the payload is built from (its codeblob is
+#          decomp/thps3/build/<game>.codeblob.bin, from decomp/common/gen_syms.py --game <game>)
+#   syms   N64Recomp symbol file (names, boundaries), relative to decomp/thps3
+# Per-class host data lives in versions/<class>/{host_force.toml,data_syms.toml,overlay_table.inc}.
+# Docs: docs/internals/versions.md (and docs/internals/versions.md for the design)
+
+[us]
+game = "thps3"
+syms = "recomp/thps3.syms.toml"

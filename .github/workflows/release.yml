@@ -1,0 +1,46 @@
+# Release build of THPS3 for macOS: a manual run that builds the universal app and attaches it to a DRAFT GitHub Release v<version>.
+# Nothing is published here. The build itself lives in the shared host, THPS64Host (.github/workflows/game-release.yml); this file
+# calls it at the SAME tag as the decomp/common submodule (change both `@v...` and `host-tag:` when the host moves).
+# Before dispatching: CHANGELOG.md has a dated `## [<version>] - YYYY-MM-DD` section (it becomes the release notes), and, if the tag
+# v<version> exists, it names the commit you dispatch from. The maintainer steps (scans, Windows zip, the release manifest, approval,
+# publishing) are in the maintainers' release checklist.
+# NOTE: GitHub runs a workflow_dispatch workflow only when the file is on the default branch.
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version without the v (e.g. 0.1.0 or 0.1.0-preview); CHANGELOG.md needs a dated [version] section"
+        required: true
+        type: string
+      arch:
+        description: "universal = arm64 + x86_64 (two native builds + lipo); arm64 = Apple Silicon only"
+        default: universal
+        type: choice
+        options: [universal, arm64]
+      replace-assets:
+        description: "Replace this commit's earlier macOS zip in the draft (the release manifest then needs approval again)"
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    uses: THPS64Recomp/THPS64Host/.github/workflows/game-release.yml@v0.1.0
+    permissions:
+      contents: write          # the draft release; the called workflow narrows it per job
+    with:
+      game: thps3
+      host-tag: v0.1.0
+      version: ${{ inputs.version }}
+      arch: ${{ inputs.arch }}
+      replace-assets: ${{ inputs.replace-assets }}
+    secrets:
+      THPS64_READ_TOKEN: ${{ secrets.THPS64_READ_TOKEN }}

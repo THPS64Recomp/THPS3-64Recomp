@@ -1,0 +1,105 @@
+name: Bug report
+description: "Something in THPS3 64: Recompiled doesn't work as it should."
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. One problem per report, please. [KNOWN-ISSUES](https://github.com/THPS64Recomp/THPS3-64Recomp/blob/main/docs/KNOWN-ISSUES.md) lists what
+        we already know about, and [TESTING](https://github.com/THPS64Recomp/THPS3-64Recomp/blob/main/docs/TESTING.md) says where to find the files asked for below.
+        For questions, use [Discussions](https://github.com/THPS64Recomp/THPS3-64Recomp/discussions).
+
+        **Never attach your ROM, the built game library (`game/`), or recordings of the game's music.**
+  - type: dropdown
+    id: release
+    attributes:
+      label: Game release
+      description: Which dump you use. `--check-rom FILE` tells you if you're not sure.
+      options:
+        - USA
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: The release (for example v0.1.0-preview) and which zip, or the commit if you built it yourself.
+      placeholder: v0.1.0-preview, macOS zip
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS, Apple Silicon
+        - macOS, Intel
+        - Windows 11
+        - Windows 10
+        - Linux (built from source)
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: machine
+    attributes:
+      label: Machine
+      description: Mac model, or CPU, GPU and GPU driver version. The display's refresh rate if it's not 60 Hz.
+      placeholder: MacBook Pro, M2 Pro, 120 Hz (or CPU, GPU, driver version)
+  - type: textarea
+    id: settings
+    attributes:
+      label: Settings
+      description: |
+        The settings you changed (aspect ratio, HUD placement, frame rate, layout...), or attach `general.cfg`,
+        `graphics.cfg` and `controls.cfg` from the config folder. Say whether you use a controller (which one) or the keyboard.
+  - type: dropdown
+    id: cheats
+    attributes:
+      label: Cheats
+      description: Were any cheats on (the Cheats tab, `cheats.cfg`, or a flag such as `--unlock-levels`)?
+      options:
+        - All off
+        - One or more on (name them below)
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead. Name the cheats here if any were on.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What you did before it happened, and how often it happens (every time, once in an hour...).
+      placeholder: |
+        1. Career, the first level
+        2. Pause, then RETRY three times
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: crashlog
+    attributes:
+      label: crash.log or other logs
+      description: |
+        After a crash, drag `crash.log` from the config folder here, or paste it. If the first-start build failed, attach
+        `first-run.log` instead. macOS: `~/Library/Application Support/THPS3-64Recomp/`; Windows: `%LOCALAPPDATA%\THPS3-64Recomp\`.
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshot or short video
+      description: If the problem shows on screen. Keep it to the problem itself.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Checks
+      options:
+        - label: I'm using my own dump, and the app accepted it at the first start.
+          required: true
+        - label: I haven't attached any game files.
+          required: true

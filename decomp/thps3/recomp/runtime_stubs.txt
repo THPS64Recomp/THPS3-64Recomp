@@ -1,0 +1,16 @@
+__osCheckPackId_recomp
+__osContAddressCrc_recomp
+__osContRamRead_recomp
+__osContRamWrite_recomp
+__osEnqueueThread_recomp
+__osPfsRWInode_recomp
+__osPfsSelectBank_recomp
+__osPiCreateAccessQueue_recomp
+__osPopThread_recomp
+__osRepairPackId_recomp
+__osSiCreateAccessQueue_recomp
+__osTimerInterrupt_recomp
+__osViSwapContext_recomp
+osPfsIsPlug_recomp
+osPfsNumFiles_recomp
+osPiRawStartDma_recomp
