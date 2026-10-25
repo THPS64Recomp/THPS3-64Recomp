@@ -29,6 +29,8 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
   to its half, and each player's HUD sits at its own view's edge (also with HUD Placement `original`). 4:3 is unchanged.
   It's on by default; Graphics > Two-Player Split Screen (`split`, `--split original`) keeps both views in the 4:3 area,
   each with its HUD inside it, and black bands at the sides.
+- Level starts freeze the picture for about 0.16 s instead of 0.2 s: the shared host unpacks the game's data twice as
+  fast and runs the game's `memset` and `memcpy` natively.
 
 ### Fixed
 - With a `controls.cfg` that matches no preset (edited by hand), Xbox B flipped and grabbed at once while skating. The

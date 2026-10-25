@@ -99,3 +99,13 @@ text = "if (thps_cheat_is_on(rdram, ctx)) { ctx->r2 = 1; return; }"
 [[patches.hook]]
 func = "Music_LoadSong"
 text = "thps_music_load_song(rdram, ctx);"
+
+# libc memset / memcpy, done natively (src/hooks.cpp; the level-load freeze, v0.2): the recompiled byte loops were ~50 ms of
+# each THPS1 level start (Heap_Free clears every freed block). Same bytes, same return value; a range outside RDRAM runs the original.
+[[patches.hook]]
+func = "memset_recomp"   # N64Recomp adds _recomp to names that clash with C library functions
+text = "if (thps_memset(rdram, ctx)) return;"
+
+[[patches.hook]]
+func = "memcpy_recomp"
+text = "if (thps_memcpy(rdram, ctx)) return;"
