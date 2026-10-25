@@ -178,6 +178,29 @@ SETTLE = 60
 
 # Sessions = one host instance each; scenarios in a session run in order on the same instance
 # (a failure skips the rest of that session). `fresh_pak` starts from a blank Controller Pak.
+# 2 PLAYER > TRICK ATTACK with two virtual pads (pad 1 = port 1, pad 2 = port 2) up to the split-screen run; then each pad reaches its own port.
+_TWO_PADS_TO_LEVEL = [
+    *BOOT_TO_MENU,
+    ("menu", "main", 3),
+    ("vpad", "attach"), ("vpad2", "attach"),
+    ("vpress", "leftshoulder"), ("vpress2", "leftshoulder"),           # pad 1 = port 1, pad 2 = port 2
+    ("log_n", r"Virtual Controller takes port 2", 1),
+    ("wait", 30),
+    *[x for _ in range(3) for x in (("vpress", "a"), ("wait", 150))],   # the main menu's 2 PLAYER, TRICK ATTACK, PLAYER ONE CONTINUE
+    ("vpress2", "a"), ("wait", 150),                                    # PLAYER TWO CONTINUE: port 2 (pad 1's A does nothing there)
+    ("vpress", "a"), ("wait", 60), ("vpress2", "a"), ("wait", 150),   # HANDICAP: each player accepts his own
+    *[x for _ in range(3) for x in (("vpress", "a"), ("wait", 150))],   # LEVEL SELECT, rules, SELECT TIME
+    ("wait_peek", "@gRunActive", 1, 60),
+]
+_TWO_PADS_PORTS = [
+    ("ctl", "vpad2 button leftshoulder 1"), ("wait", 8),
+    ("ctl_match", "inputstate", r"last=0x0000 last2=0x0020$"),        # pad 2 reaches port 2 only
+    ("ctl", "vpad2 button leftshoulder 0"),
+    ("ctl", "vpad button rightshoulder 1"), ("wait", 8),
+    ("ctl_match", "inputstate", r"last=0x0010 last2=0x0000$"),        # pad 1 port 1 only
+    ("ctl", "vpad button rightshoulder 0"),
+]
+
 SESSIONS = [
     dict(name="frontend", config="suite-config", fresh_pak=True, wav=True, scenarios=[
         ("boot_title", "boot: Expansion Pak notice, legal text, then the logo screen (overlay t2_intro)", [
@@ -489,23 +512,8 @@ SESSIONS = [
     ]),
     dict(name="two-players-pads", config="two-players-pads-config", fresh_pak=True, wav=False, args=["--skip-intro", "--hidden"], scenarios=[
         ("two_p_two_pads", "TWO pads: each picks its own skater, the split-screen level loads, each pad reaches its own port", [
-            *BOOT_TO_MENU,
-            ("menu", "main", 3),
-            ("vpad", "attach"), ("vpad2", "attach"),
-            ("vpress", "leftshoulder"), ("vpress2", "leftshoulder"),           # pad 1 = port 1, pad 2 = port 2
-            ("log_n", r"Virtual Controller takes port 2", 1),
-            ("wait", 30),
-            *[x for _ in range(3) for x in (("vpress", "a"), ("wait", 150))],   # the main menu's 2 PLAYER, TRICK ATTACK, PLAYER ONE CONTINUE
-            ("vpress2", "a"), ("wait", 150),                                    # PLAYER TWO CONTINUE: port 2 (pad 1's A does nothing there)
-            ("vpress", "a"), ("wait", 60), ("vpress2", "a"), ("wait", 150),   # HANDICAP: each player accepts his own
-            *[x for _ in range(3) for x in (("vpress", "a"), ("wait", 150))],   # LEVEL SELECT, rules, SELECT TIME
-            ("wait_peek", "@gRunActive", 1, 60),
-            ("ctl", "vpad2 button leftshoulder 1"), ("wait", 8),
-            ("ctl_match", "inputstate", r"last=0x0000 last2=0x0020$"),        # pad 2 reaches port 2 only
-            ("ctl", "vpad2 button leftshoulder 0"),
-            ("ctl", "vpad button rightshoulder 1"), ("wait", 8),
-            ("ctl_match", "inputstate", r"last=0x0010 last2=0x0000$"),        # pad 1 port 1 only
-            ("ctl", "vpad button rightshoulder 0"),
+            *_TWO_PADS_TO_LEVEL,
+            *_TWO_PADS_PORTS,
         ]),
     ]),
     # Controller Pak: the career must exist (SAVE DATA is greyed without one), so the first scenario starts a
@@ -759,3 +767,30 @@ SESSIONS += [course_cycle_session(
      ("press", "DOWN"), ("wait", 20), ("press", "DOWN"), ("wait", 20), ("shot", "end_menu"), ("press", "A"), ("wait", 150)],
     claim=[("vpress", "rightstick"), ("wait", 10)],
 )]
+
+# Two players in widescreen (v0.2, rt64-splitscreen-widescreen.patch + hud_anchor.cpp): the side-by-side split screen fills the wide picture,
+# each view widened like the one-player camera (`split` views > 0), each player's HUD block at its own view's edge (the game mirrors player 2's
+# HUD to the right of its view: groups at q0 and q4), both pads on their own ports. present_split: in each side band outside the central 4:3
+# area >= 90 % of the columns are drawn. Then `split off` (live) for a before picture. `169-hudorig`: HUD Placement `original` places the
+# split screen's HUD the same way (the views fill the picture; the 4:3 spot would leave each HUD inside its view), so the same groups are expected.
+SESSIONS += [
+    dict(name=f"two-players-{var}", config=f"two-players-{var}-config", fresh_pak=True, wav=False, present_every=10,
+         args=["--skip-intro", "--hidden", "--aspect", asp, "--window", win, "--res-scale", "2", *extra], scenarios=[
+        (f"two_players_{var}", f"two players at {asp}{' (hud original)' if extra else ''}: the split screen fills the picture, each HUD at its view's edge, each pad on its port", [
+            *_TWO_PADS_TO_LEVEL,
+            ("wait", 60),
+            ("present_split", win, 0.90),
+            ("keep_present", f"two_players_{var}_after"),
+            ("ctl_match", "split", r"wide=1 views=[1-9]\d* .* hud_tasks=[1-9]\d* groups q0=[1-9]\d* .* q4=[1-9]\d* "),
+            ("ctl_match", "hud", r"mode=%s " % ("original" if extra else "expand")),
+            *_TWO_PADS_PORTS,
+            ("ctl", "split off"), ("wait", 20), ("keep_present", f"two_players_{var}_before"),
+        ]),
+    ])
+    for (var, asp, win, extra) in (("169", "16:9", "1280x720", []), ("219", "21:9", "1680x720", []),
+                                   ("169-hudorig", "16:9", "1280x720", ["--hud", "original"]))
+]
+
+# Two players with split original (hud expand): each player's HUD stays with its view in the 4:3 middle (hud_sessions.two_players_split_original).
+from hud_sessions import two_players_split_original  # noqa: E402
+SESSIONS.append(two_players_split_original(_TWO_PADS_TO_LEVEL))

@@ -88,7 +88,6 @@ All bindings and the N64 layout: [docs/MANUAL.md](docs/MANUAL.md).
 - An early preview: this list is incomplete.
 - A short freeze when a level loads.
 - At 21:9, a far wall can drop out at the right edge.
-- Two players (split screen) stays a 4:3 picture in widescreen.
 - Two rare crashes were each seen once in about 60 launches during development. Please send `crash.log` if you see one.
 Full list: [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md).
 
