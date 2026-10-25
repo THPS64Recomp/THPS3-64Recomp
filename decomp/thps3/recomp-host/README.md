@@ -139,6 +139,10 @@ the in-game settings menu (`menu` and `menu-reload` sessions; `menu-controls`, `
 and the Controllers list; all skipped when `--features` says `menu=0`); the first career level is the Foundry.
 The `level_grab` air check only warns here.
 
+`lf-check` (`tests/load_freeze.py`) times the first three course starts of the course cycle with `ftime`, with no screenshot inside
+the window: the median over the starts of the longest gap between game frames while the course loads stays under 135 ms (100-112 ms seen).
+`lf-probe` (opt-in, `--session lf-probe`) runs all four starts in a visible window and keeps the CSVs in `build/tests/lf/`.
+
 Full run on the static build, 2026-10-12: 31 pass, 1 warn (the `level_grab` air flag), 0 fail, 4 skipped (launcher-only scenarios). The split-built
 library passed the full suite (25 pass, 1 warn, 4 skipped) before the menu scenarios were added, and `tests/firstrun_test.py` passes.
 

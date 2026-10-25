@@ -46,8 +46,8 @@ been played through by a person on this build: the park editor, split screen in 
   whose pairing hasn't been checked. Replays and cutscenes are untested.
 - **The special meter at `hud = original`** has a top line, a tall left tick, a short right stub and bars hanging below.
   The game itself draws it that way, at every aspect ratio and frame rate.
-- **Each level start freezes the picture briefly** while the game loads the level, and the **attract demo** has short
-  stalls every ten seconds or so. (Measured at 100 to 150 ms in THPS1, which loads levels the same way.)
+- **Each level start freezes the picture briefly** while the game loads the level (about 0.16 s, 0.2 s in the first
+  preview), and the **attract demo** has short stalls every ten seconds or so.
 - RT64 **compiles shaders the first time an effect appears**, which causes short hitches.
 - With the window hidden or covered, the app stops presenting frames; the game keeps running.
 - Apple GPUs have no 8x MSAA; asking for it turns MSAA off.
