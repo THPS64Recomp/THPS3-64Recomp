@@ -35,7 +35,8 @@ the Cheats tab gets you to every level quickly.
 - **Recomp settings:** press **Esc** (or **Back** on a controller) for graphics, controls, sound and cheats. The game's
   own options are still in its menus.
 - **Modern controls:** any SDL controller, hot-plugging, two players. Xbox-style layout (ollie, flip, grab and grind on the
-  face buttons instead of the N64's C buttons) or the original N64 layout.
+  face buttons instead of the N64's C buttons) or the original N64 layout. Rebind any button or key in the settings menu,
+  and pick which controller is player 1 or 2 there.
 - **Saves:** Controller Pak saves in a standard `.mpk` file: careers, created skaters and parks.
 - **Cheats:** Unlock All Levels, Perfect Balance, Slow Motion, Skip to Restart, Always Special. Off by default.
 

@@ -62,11 +62,10 @@ been played through by a person on this build: the park editor, split screen in 
 
 ## Input and saves
 
-- **Player 2:** there's no screen for assigning controllers. The first controller to press a button is player 1 and the
-  next is player 2; the keyboard is always player 1, so two players need two controllers ([MANUAL](MANUAL.md#controls)).
+- **Player 2:** by default the first controller to press a button is player 1 and the next is player 2. The Controls
+  tab's Controllers list can swap them or give a controller either player; that choice lasts until you quit
+  ([MANUAL](MANUAL.md#controls)). The keyboard is always player 1.
 - OPTIONS > CONTROLLER TWO opens only for the second controller's A, as in the original game.
-- **Single keys and buttons** can't be rebound in the settings menu yet; it picks a layout. Edit `controls.cfg` for the
-  rest.
 - **Cheats are test aids:** off by default. They aren't stored in the Controller Pak save, but progress you make with a
   cheat on (goals, scores, levels unlocked by playing) is saved as usual. While one is on, the log and `crash.log` name it ([MANUAL](MANUAL.md#cheats)).
 
@@ -88,4 +87,4 @@ been played through by a person on this build: the park editor, split screen in 
 
 ## Not in this release
 
-Texture packs, mods, rebinding single keys in the menu, and a launcher beyond the first-start window.
+Texture packs, mods, and a launcher beyond the first-start window.

@@ -84,7 +84,7 @@ Run from a terminal (PowerShell) in `build\cmake`:
 - [ ] Save a Controller Pak file (career), quit, relaunch, load it.
 
 ### 4.3 Controls (10 min)
-- [ ] Keyboard: defaults work, all tricks; rebind a key in `controls.cfg` and restart.
+- [ ] Keyboard: defaults work, all tricks; rebind a key in the settings menu's Controls tab (and one in `controls.cfg`, then restart).
 - [ ] Xbox pad: sticks, triggers, d-pad; unplug and replug mid-game; rumble with `--rumble-pak`.
 - [ ] Two pads: port assignment by first press; a Steam Input / DS4Windows setup if you have one.
 - [ ] Input latency feels the same as on the Mac.
