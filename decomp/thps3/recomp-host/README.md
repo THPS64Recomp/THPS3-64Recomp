@@ -135,7 +135,8 @@ tools/test.sh --check-refs
 
 One `thps3_recomp` at a time (`--no-pads --mute`, `uptime` in every log). The scenarios are the ones of THPS2's suite, with THPS3's constants
 (pad layer `0x800EF794`, skater pointer `0x800EF3AC`, pad pointer `+0x1780`, air flag `+0x1B94`) in `tests/scenarios.py`, plus the six scenarios of
-the in-game settings menu (`menu` and `menu-reload` sessions, skipped when `--features` says `menu=0`); the first career level is the Foundry.
+the in-game settings menu (`menu` and `menu-reload` sessions; `menu-controls`, `menu-controls-reload` and `menu-ports` for rebinding
+and the Controllers list; all skipped when `--features` says `menu=0`); the first career level is the Foundry.
 The `level_grab` air check only warns here.
 
 Full run on the static build, 2026-10-12: 31 pass, 1 warn (the `level_grab` air flag), 0 fail, 4 skipped (launcher-only scenarios). The split-built
@@ -154,4 +155,4 @@ Config folder: `%LOCALAPPDATA%\THPS3-64Recomp`.
 - No in-game pak swapping; the in-game pak manager is not exercised by the tests; Rumble Pak output is untested on a real pad.
 - Widescreen: menus and loading screens are 4:3 and centred; the in-level HUD is anchored to the screen edges by default (`--hud expand`; `--hud original` keeps it centred).
 - Two intermittent crashes were seen once each in about 60 launches (see [docs/KNOWN-ISSUES.md](../../../docs/KNOWN-ISSUES.md)).
-- Texture packs: not attempted. The settings menu has no rebinding of single keys or buttons yet (edit `controls.cfg`).
+- Texture packs: not attempted. The settings menu rebinds single keys and buttons in its Controls tab (saved to `controls.cfg`).

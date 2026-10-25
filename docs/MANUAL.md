@@ -65,25 +65,46 @@ direction for a grab, and Y near a rail for a grind. Manuals need no button: tap
 manual: down then up). Revert is R (RB on a controller) as you land from the air in a halfpipe.
 - **B is grab while you skate, and back in menus.** Since the game reads N64 B as flip while you skate, sending "grab and B"
   from one button would flip and grab at once. So the app drops that B while you skate in a level, and drops the grab on
-  every other screen (menus, Create-a-Skater, the pause menu and the screens over a level).
+  every other screen (menus, Create-a-Skater, the pause menu and the screens over a level). This applies whenever one
+  button or key is bound to both N64 B and C-right, as the default layout's B is, also after you rebind other actions.
 - **The game's own controller options** (OPTIONS > CONTROLLER ONE) only swap L and R and set autokick and
   rumble. They can't remap the trick buttons.
-- **Presets.** The settings menu's Controls tab picks one. `--controls-preset n64` switches to the plain N64 layout (A
-  south, B west, the C buttons on the right stick, Y, B, RB and RS), and `--controls-preset thps-xbox` switches back. A
-  preset replaces every binding and is saved; the previous file is kept as `controls.cfg.bak`.
-- **Remapping.** Edit `controls.cfg`. Each line is `INPUT = FIELD, FIELD ...`, with up to four fields per input.
+- **Rebinding.** Open the settings menu (Esc, or Back on a controller) and its Controls tab. Under **Bindings**, each
+  N64 input has a row with two controller slots and two keyboard slots, and the row names what the game does with it.
+  Choose a slot (click it, or move to it and press Enter or A), then press the button, trigger or stick direction for a
+  controller slot, or the key for a keyboard slot. Esc or Back cancels, Backspace or Delete empties the slot, and after
+  5 seconds the slot gives up and stays as it was.
+  - The change works at once and is saved to `controls.cfg` with `preset = custom`. The first change in a session keeps
+    the file it replaces as `controls.cfg.bak`.
+  - If another action already uses that button, the two trade: the other action gets the slot's old button. Menu
+    accept and menu back (N64 A and B) may share a button with a trick, as the default layout does, so they keep theirs.
+  - **Default** on a row puts that row back as the layout has it.
+  - A slot shown in yellow differs from the layout you chose (Face buttons or N64), so you can see what you changed.
+  - **Reset all to default**, below the rows, puts every binding back to that layout. It asks first: press it again
+    (it now says **Confirm: reset all**) to do it; anything else cancels. The old file is kept as `controls.cfg.bak`.
+- **Presets.** Controller Layout, at the top of the Controls tab, resets every binding to a layout: **Face buttons**
+  (`thps-xbox`, the default) or **N64 layout** (`n64`: A south, B west, the C buttons on the right stick, Y, B, RB and
+  RS). `--controls-preset n64` and `--controls-preset thps-xbox` do the same from the command line. The previous file is
+  kept as `controls.cfg.bak`.
+- **Editing `controls.cfg`.** The app reads it at start. Each line is `INPUT = FIELD, FIELD ...`, with up to four fields
+  per input.
   - Inputs: `a b z l r start c_up c_down c_left c_right dpad_up dpad_down dpad_left dpad_right stick_left stick_right
     stick_up stick_down`.
   - Fields: `key:NAME` (an SDL key name such as `Space`, `Return`, `Left`, `A`; the keyboard counts on port 1 only),
     `button:NAME` (`a b x y back start leftstick rightstick leftshoulder rightshoulder dpup dpdown dpleft dpright`),
     `axis:NAME+` or `axis:NAME-` (`leftx lefty rightx righty lefttrigger righttrigger`), or `none`.
-  - The `preset =` line says `thps-xbox`, `n64` or `custom`. A file you edited by hand is never overwritten.
-- **Players 1 and 2.** Ports are given out at each start by the first button press. Player 1 has the keyboard and the
-  first controller that presses a button; player 2 is the next controller that presses one; a third is ignored. Moving a
-  stick doesn't claim a port. Plug in or pair a controller at any time, then press a button on it. If player 1's
-  controller is unplugged, player 2's becomes player 1. The keyboard always belongs to player 1, so **two players need two
-  controllers**. There's no screen yet for choosing who is who: press a button first on the controller that should be
-  player 1.
+  - The `preset =` line says `thps-xbox`, `n64` or `custom`. The app never rewrites a file you edited by hand on its
+    own; a change in the menu does, after keeping the old file as `controls.cfg.bak`.
+- **Players 1 and 2.** By default, ports are given out by the first button press. Player 1 has the keyboard and the first
+  controller that presses a button; player 2 is the next controller that presses one; a third is ignored. Moving a stick
+  doesn't claim a port. Plug in or pair a controller at any time, then press a button on it. If player 1's controller is
+  unplugged, player 2's becomes player 1.
+- **The Controllers list** (Controls tab) shows each connected controller, which player it is and the buttons it's
+  pressing right now, so you can tell two controllers apart. **Player 1** or **Player 2** on a controller's row gives it
+  that player (a controller already there trades places with it), and **Swap players 1 and 2** trades them. The
+  keyboard always belongs to player 1. With one controller set to Player 2, the keyboard alone is player 1, so the
+  keyboard and one controller can play a two-player game. The choice lasts until you quit; at the next start, the first
+  press decides again.
 - **With one controller**, the 2 PLAYER screens that wait for player 2 (choose skater, continue, handicap) take player 1's
   input, so they can't lock up. In a level, player 2 stays empty. OPTIONS > CONTROLLER TWO opens only for the second
   controller's A, as in the original game.
@@ -92,14 +113,13 @@ manual: down then up). Revert is R (RB on a controller) as you land from the air
 
 **Esc** (controller: **Back**) opens the settings menu over the game. Its tabs:
 - **General:** skip intro, show FPS;
-- **Controls:** the controller layout;
+- **Controls:** the layout presets, the Controllers list and rebinding (see [Controls](#controls));
 - **Graphics:** aspect ratio, HUD placement, two-player split screen, picture border, resolution, MSAA, frame rate, window mode;
 - **Sound:** volume;
 - **Cheats:** see [Cheats](#cheats).
 
 Move with the arrow keys or the D-pad, pick with Enter or A, change tab with LB / RB, and close with Esc, B or Back. The
-menu writes the same files as the command-line flags (below). It doesn't rebind single keys or buttons yet: edit
-`controls.cfg` for that. Full screen: Alt+Enter on Windows; on macOS, the window's full-screen button or Ctrl+Cmd+F.
+menu writes the same files as the command-line flags (below). Full screen: Alt+Enter on Windows; on macOS, the window's full-screen button or Ctrl+Cmd+F.
 
 ## Settings files
 
