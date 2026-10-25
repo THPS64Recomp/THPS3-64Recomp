@@ -11,6 +11,10 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
 - Built on THPS64Host v0.2.0.
 - Removed the known issue "at 21:9, a far wall can drop out at the right edge". It was reported in THPS1, where it
   doesn't happen in v0.1.0, and the widescreen code involved is shared by all three games.
+- Two-player split screen fills the picture in widescreen (16:9, 21:9, following the window): each player's view is widened
+  to its half, and each player's HUD sits at its own view's edge (also with HUD Placement `original`). 4:3 is unchanged.
+  It's on by default; Graphics > Two-Player Split Screen (`split`, `--split original`) keeps both views in the 4:3 area,
+  each with its HUD inside it, and black bands at the sides.
 
 ## [0.1.0-preview] - 2026-10-18
 

@@ -93,7 +93,7 @@ manual: down then up). Revert is R (RB on a controller) as you land from the air
 **Esc** (controller: **Back**) opens the settings menu over the game. Its tabs:
 - **General:** skip intro, show FPS;
 - **Controls:** the controller layout;
-- **Graphics:** aspect ratio, HUD placement, resolution, MSAA, frame rate, window mode;
+- **Graphics:** aspect ratio, HUD placement, two-player split screen, resolution, MSAA, frame rate, window mode;
 - **Sound:** volume;
 - **Cheats:** see [Cheats](#cheats).
 
@@ -124,7 +124,8 @@ A command-line flag overrides the value and **is saved back**.
 | `res_scale` | `0` | internal resolution multiplier; `0` is an integer scale of the window (3x at 720p) | `--res-scale N` |
 | `msaa` | `4` | `0`, `2`, `4` (Apple GPUs have no 8x; asking for it turns MSAA off) | `--msaa N` |
 | `refresh` | `display` | `original` (the game's 30 fps), `display` (the display's rate: 60, or 120 on ProMotion), or a number from 30 to 1000 | `--refresh X` |
-| `hud` | `expand` | HUD placement in widescreen: `original` (the centred 4:3 area, as on a TV), `16:9` (the edges of a 16:9 picture), `expand` (the edges of the window's picture). No effect at `aspect original`. Menus, the pause menu and result pages always stay a centred 4:3 page | `--hud X` |
+| `hud` | `expand` | HUD placement in widescreen: `original` (the centred 4:3 area, as on a TV), `16:9` (the edges of a 16:9 picture), `expand` (the edges of the window's picture). No effect at `aspect original`. Menus, the pause menu and result pages always stay a centred 4:3 page. In a widened two-player split screen each player's HUD sits at the edge of their own view, with `original` too | `--hud X` |
+| `split` | `wide` | two-player split screen in widescreen: `wide` each player's view fills its half of the picture; `original` both views stay in the centred 4:3 area with black bands at the sides, as on a TV, and each player's HUD stays inside its view. No effect at `aspect original` | `--split X` |
 
 The file also holds a `cfg_rev` line that the app writes itself; leave it. Files from earlier builds that say
 `hud=original` (the old default) are moved to `expand` once; choose `original` again to keep it.
