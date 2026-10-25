@@ -794,3 +794,9 @@ SESSIONS += [
 # Two players with split original (hud expand): each player's HUD stays with its view in the 4:3 middle (hud_sessions.two_players_split_original).
 from hud_sessions import two_players_split_original  # noqa: E402
 SESSIONS.append(two_players_split_original(_TWO_PADS_TO_LEVEL))
+# Border crop (graphics setting `border`, src/border_crop.cpp): the shared tests/crop_sessions.py.
+from crop_sessions import crop_sessions  # noqa: E402
+SESSIONS += crop_sessions([*CAREER_TO_GOALS, ("go", "A", "goals", "in_level", 90)], boot=BOOT_TO_MENU, pause=[("go", "START", "in_level", "pause")])
+# Border crop in a two-player split screen at 16:9: each view's own inset scissor goes to the frame's edges too (crop_sessions.crop_two_players).
+from crop_sessions import crop_two_players  # noqa: E402
+SESSIONS.append(crop_two_players(_TWO_PADS_TO_LEVEL, [("ctl", "vpad button start 1"), ("wait", 10), ("ctl", "vpad button start 0"), ("wait", 45)]))

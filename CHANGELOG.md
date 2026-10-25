@@ -7,6 +7,12 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
 
 ## [Unreleased]
 
+### Added
+- Graphics > Picture Border (`border = fill`, `--border fill`): the 3D picture reaches the edges of the window, without the
+  thin black frame the game leaves for a TV's overscan. It shows a little more of the scene at the same size (no zoom). Off by
+  default; menus and loading screens keep their own frame. In a two-player split screen, both views reach the edges
+  too and meet at the game's thin divider line in the middle.
+
 ### Changed
 - Built on THPS64Host v0.2.0.
 - Removed the known issue "at 21:9, a far wall can drop out at the right edge". It was reported in THPS1, where it
