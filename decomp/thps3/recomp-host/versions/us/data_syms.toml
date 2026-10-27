@@ -6,6 +6,19 @@ gTextExpansionNotFound = 0x8001EDE0
 gSControl              = 0x800EF794   # the PlayStation-style pad layer: 20 SButton records of 16 bytes
 gSkater                = 0x800EF3AC   # pointer to the skater object (CBruce)
 gRunActive             = 0x800E0D20   # 1 while a level run is played, 0 paused / front end / screens over the level (RAM diffs of play, pause, end-of-run and menu frames)
+gFarPlane              = 0x800E9D20   # draw distance: far plane (float, fog end / 16; written by func_80022C0C = THPS2's func_80023CFC)
+gWorldFarCache         = 0x800E0AF8   # func_80022710 sets the world view 0x800E0040 again only when gFarPlane != this copy
+gDlBufSize             = 0x80105C14   # the block below is laid out as THPS2's (0x80101DF4..): matrix allocator 0x800BCC94 reads count 0x80105C40 / cap 0x80105C44
+gDlBufs                = 0x80105C30
+gDlHead                = 0x800FCB84   # as THPS2's 0x800F8D64: the frame end (0x800BDBD4) checks head - gDlBufs[gDlFrame] against gDlBufSize
+gDlFrame               = 0x800FC798   # 0 or 1: the buffer the frame being built uses
+gMtxPools              = 0x80105C38
+gMtxCap                = 0x80105C44
+gVtxPools              = 0x80105C50
+gVtxCap                = 0x80105C60
+gWorldItems            = 0x800E23D4   # the course item list (World_DrawItems, World_SetVisibilityInBox)
+gRenderer              = 0x800FEDD8   # pointer to the renderer: World_DrawItems hands it to the mesh batcher 0x800C9A3C
+gDeferredItemCount     = 0x800EA4AC   # World_DrawItems zeroes it (0x80042090), then appends items with a depth offset (+0x48 != 0) to the 64 words at 0x800EA3AC, no bound check
 gTimeScale             = 0x800ED870   # gPhysicsFrameTime * 7680 each frame (the frame update; Slow-Nic: / 4 while the skater does a trick)
 gMusNumChannels        = 0x80105E00   # MUS library globals: channel count; MusHandleStop 0x800D8C8C / __MusIntMain 0x800D9730 read both
 gMusChannels           = 0x80105E08   # MUS library globals: the channel records (304 bytes each)

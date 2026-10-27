@@ -51,6 +51,12 @@ been played through by a person on this build: the park editor, split screen in 
 - RT64 **compiles shaders the first time an effect appears**, which causes short hitches.
 - With the window hidden or covered, the app stops presenting frames; the game keeps running.
 - Apple GPUs have no 8x MSAA; asking for it turns MSAA off.
+- **Draw distance:** 2x, 4x and Full were checked on one 15-second ride per course (all at 30 fps), not in long play, two-player
+  split screen or replays. At Full the fog is effectively off. A longer distance chosen during a run reaches the far scenery only
+  after a RETRY, the next course or a camera change (the game sets that part of the camera only then); a shorter one
+  applies at once. No restart is needed.
+  Parts of a course the game hides by area appear only as you get near them, as in the original game, and a few far
+  pieces the game never drew from that distance can look odd.
 
 ## Stability
 

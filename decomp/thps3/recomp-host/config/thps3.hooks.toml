@@ -93,6 +93,49 @@ text = "if (thps_unlock_level(rdram, ctx)) { ctx->r2 = 1; return; }"
 func = "Cheat_IsOn"
 text = "if (thps_cheat_is_on(rdram, ctx)) { ctx->r2 = 1; return; }"
 
+# Draw distance "full" (game/draw_distance.cpp, off by default): World_DrawItems(list, view, player) draws the course's items and skips the
+# ones the trigger scripts have hidden by zone (item flag bit 1, player 2: 0x40). With "full" the hook clears those bits for the length of
+# the call and puts them back, so everything is drawn while the game's own state (collision, triggers) is unchanged.
+[[patches.hook]]
+func = "World_DrawItems"
+text = "if (thps_world_draw_items(rdram, ctx)) return;"
+
+# Draw distance (game/draw_distance.cpp): Mesh_QueueEmit(renderer) draws one pass's mesh queue (845 entries) and depth-sorted list of
+# translucent meshes (96); past either size the game drops meshes. World_DrawDeferredItems(list) draws the items World_DrawItems put on its
+# list of 64, which the game does not check. The hooks note how full the three are, so the governor can keep a longer far plane from
+# filling them. Read only.
+[[patches.hook]]
+func = "Mesh_QueueEmit"
+text = "thps_mesh_queue_emit(rdram, ctx);"
+
+[[patches.hook]]
+func = "World_DrawDeferredItems"
+text = "thps_world_draw_deferred(rdram, ctx);"
+
+# Draw distance (game/draw_distance.cpp): when the setting is not `original` at the time, the gfx set-up's Mem_Alloc for the two matrix
+# pools (0xD200 bytes, cap 420 stored just before) asks for a bigger block and raises the cap word; every other call runs unchanged.
+[[patches.hook]]
+func = "Mem_Alloc"
+text = "if (thps_mem_alloc(rdram, ctx)) return;"
+
+# Draw distance (game/draw_distance.cpp): the course gfx set-up. The hook runs it and tells the Mem_Alloc hook that the two display-list
+# requests come from it, so with dd_buffers = bigger they get at least 144 KiB each (the front end's own set-up is not hooked).
+[[patches.hook]]
+func = "Gfx_SetupCourse"
+text = "if (thps_gfx_setup_course(rdram, ctx)) return;"
+
+# Draw distance "full" (game/draw_distance.cpp): World_SetVisibilityInBox is the trigger scripts' zone culling (hide / show every item in a
+# box as the skater moves). The hook runs it as is and notes which hidden bits it set on which items, so "full" unhides only those and
+# leaves items hidden by other commands (secrets, things revealed by events) alone. Read-only for the game.
+[[patches.hook]]
+func = "World_SetVisibilityInBox"
+text = "if (thps_world_set_visibility_in_box(rdram, ctx)) return;"
+
+# Draw distance "full" (game/draw_distance.cpp): World_FindItem(list, name) is how anything addresses one course item by name (the scripts'
+# show / hide / kill commands, goals, gaps). The hook runs it as is and marks the item it returns as event-owned: "full" never unhides it.
+[[patches.hook]]
+func = "World_FindItem"
+text = "if (thps_world_find_item(rdram, ctx)) return;"
 # Music (src/music.cpp). Music_LoadSong(player, song) copies the next song over the one still playing; the old song's
 # channels, only marked to stop, would run one more frame of events from the new bytes (THPS2: SIGBUS in n_alLoadParam
 # at the end of a run). The hook stops them without further events first. THPS_MUSIC_GUARD=0 turns it off (A/B).
