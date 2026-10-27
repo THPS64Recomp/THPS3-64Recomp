@@ -30,7 +30,7 @@ You don't have to do all of this. Even one item, with a good report, helps. Abou
    game build. Note how long the build took and anything unclear on the way.
 2. **Front end.** The intro and logos, the main menu, OPTIONS. Turn on **Skip Intro** in the settings menu, quit, and start again.
 3. **Settings menu.** Open it with Esc (Back on a controller) and try each tab: aspect ratio (4:3, 16:9, 21:9), HUD placement,
-   frame rate (`display` and `original`), resolution, MSAA, window mode and full screen, volume. Quit and restart: the settings
+   frame rate (Original and 60), resolution, MSAA, window mode and full screen, volume. Quit and restart: the settings
    should still be there.
 4. **A career.** Start a career and play a level for a few minutes: ollie, flip, grab, grind, manuals, reverts (R in a halfpipe), the special meter and a special trick. Pause,
    **Retry** a few times, then **End Run**.
