@@ -20,6 +20,13 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
   to swap players or give a controller either player. One controller on player 2 with the keyboard alone on player 1
   makes a two-player game with one controller. The choice lasts until you quit.
 - Test sessions `menu-controls`, `menu-controls-reload` and `menu-ports` (virtual pads).
+- Draw distance (Graphics tab, `draw_distance` in `graphics.cfg`, `--draw-distance`): Original (the default, the game as it
+  was), 2x, 4x and Full (the whole course; scenery the game hides by area as you skate, secrets and items a goal
+  reveals stay hidden until the game shows them). It applies without a restart. A shorter distance applies at
+  once; a longer one reaches the far scenery after a RETRY, the next course or a camera change. Every course start sets up
+  bigger matrix buffers, vertex pools and display lists (144 KiB instead of 72), of which the game uses only its own part at Original.
+  It steps back on its own if a frame comes close to filling the game's buffers. `dd_buffers = original` in `graphics.cfg` (`--dd-buffers original`; not in the menu)
+  keeps the game's own buffers and memory layout exactly; it needs a restart.
 
 ### Changed
 - Built on THPS64Host v0.2.0.

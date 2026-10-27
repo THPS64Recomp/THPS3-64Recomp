@@ -26,6 +26,15 @@ splits = [0x800BA520]   # recomp_check candidate: pointed to from data (0x80017A
 "0x800C4624" = "MsgBox_SetText"       # (box, text, ...): stores a message box's text pointer
 "0x80058114" = "Level_IsSelectable"   # (level, mode): the level select's "available?" test (THPS2: 0x800570C4)
 "0x8005900C" = "Cheat_IsOn"   # (index): the cheat-on byte (game state +0x130E + 4 * index); THPS2: 0x80058010
+"0x80041F2C" = "World_DrawItems"   # the world item loop (THPS2: 0x80041964): skips items whose trigger-visibility bit (1, player 2: 0x40) is set; draw distance "full"
+"0x800B811C" = "Mem_Alloc"   # (heap, size, align): first fit (draw distance: the matrix-pool request at start-up)
+"0x80032C88" = "World_SetVisibilityInBox"   # (min, max, ..., set mask, clear mask): the trigger scripts' zone culling; draw distance tracks which items it hid
+"0x800BD270" = "Gfx_SetupCourse"   # (): THPS2's 0x800B90BC: gDlBufSize = gDlUnits x 8 (0x800FC764, set to 0x2400 / 0x3000 by 0x800BC8D0), the two display lists (0x800BD46C), then the matrix and vertex pools; the front end has its own (0x800BD5EC)
+"0x800C98F0" = "Mesh_PassBegin"   # (renderer): batching on (+0x3FB0 = 1); the frame wraps World_DrawItems in a begin / end pair (0x80032528 / 0x80032574)
+"0x800C9910" = "Mesh_PassEnd"   # (renderer): flushes the batch (0x800CA2A4), Mesh_QueueEmit, then empties the lists and turns batching off
+"0x800CAA20" = "Mesh_QueueEmit"   # (renderer): draws the mesh queue (845 entries; the flush 0x800CA2A4 drops the rest) and the depth-sorted list (96); called from the pass end 0x800C9910
+"0x800424B8" = "World_DrawDeferredItems"   # (item list): draws the items World_DrawItems put on its 64-entry list (its own pass, 0x800325DC..0x800325F4)
+"0x800436F0" = "World_FindItem"   # (list, name checksum) -> item: how the scripts' per-item commands (show / hide / kill by name) and the gameplay code find an item
 "0x800D6B44" = "Music_LoadSong"   # = THPS2 USA 0x800D1E34 (same code, only the string/table addresses differ)
 
 [overlay_force]

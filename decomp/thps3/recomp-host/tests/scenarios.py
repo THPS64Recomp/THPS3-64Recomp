@@ -755,6 +755,148 @@ SESSIONS += cheat_sessions(BOOT_TO_MENU, [*CAREER_TO_GOALS, ("go", "A", "goals",
 from menu_session import MENU_SESSIONS  # noqa: E402
 SESSIONS += MENU_SESSIONS
 
+# Draw distance (2026-10-17): career (unlocked levels), one level with the setting under test.
+# Same steps as THPS1's dd-probe: a paused spot compared per factor (DD_AB), then a ride with frame times. Exploration only (optin).
+# DD_RIGHTS: RIGHT presses at the level select; DD_TAG / DD_OUT: output; DD_ARGS: extra host args; DD_RIDE "lefty:frames ..." (x=... for leftx).
+_DD_DIR = _os.path.join(_os.environ.get("DD_OUT", "/tmp/dd"), _os.environ.get("DD_TAG", "run"))
+_DD_SHOT = lambda name: [("ctl", f"pcap 1 {_DD_DIR}/{name}"), ("wait", 3), ("ctl", "pcap 0"), ("wait", 10)]
+# DD_AB "K[:S] ...": factor K, with `dd showall S` first when given (1:0 = the game's own picture inside `full`); DD_TRACE=1: `dltrace 1` after
+# each shot (the frame's commands in the host log: which course items are drawn, tools in the private notes); DD_VTRACE=1 / DD_VRAMSAVE=1:
+# the same, and a RAM dump, at the "vantage" frame (DD_WATCH runs).
+_DD_TRACE = [("ctl", "dltrace 1"), ("wait", 5)] if _os.environ.get("DD_TRACE") else []
+DD_RESTART_PRESSES = lambda v: [] if v == "" else [s for n, d in [(v.split(":") + ["3"])[:2]] for k, w in [
+    ("START", 45), *[("DOWN", 12)] * int(d), ("A", 30), *[("DOWN", 12)] * int(n), ("A", 120)] for s in (("press", k), ("wait", w), ("shot", "pre"))]
+_DD_AB = [s for t in _os.environ.get("DD_AB", "1 2 4 8").split() for k, sa in [(t.split(":") + [""])[:2]] for s in (
+    *([("ctl", f"dd showall {sa}")] if sa else []),
+    ("ctl", f"dd factor {k}"), ("ctl", "dd reset"), ("wait", 20), *_DD_SHOT(f"start_x{k}{'_s' + sa if sa else ''}"), *_DD_TRACE, ("dl", 30, 0), ("ctl", "dd"))]
+SESSIONS += [
+    dict(name="dd-probe", config="dd-config", fresh_pak=True, wav=False, optin=True,
+         args=["--skip-intro", "--hidden", "--unlock-levels", "--present-size", "960x540", "--aspect", "16:9", "--window", "1280x720",
+               "--refresh", "60"] + _os.environ.get("DD_ARGS", "").split(),
+         scenarios=[
+        ("dd_probe", "draw distance: paused spot per factor (frame, triangles, buffers), camera swing, ride with frame times", [
+            *BOOT_TO_MENU,
+            *CAREER_TO_GOALS[:-1],
+            *[s for _ in range(int(_os.environ.get("DD_RIGHTS", "0"))) for s in (("press", "DOWN"), ("wait", 20))],   # THPS3: a vertical list
+            ("shot", "level_select"),
+            ("press", "A"), ("wait", 150), ("shot", "goals"),
+            # DD_WATCH=1: start counting at the run flag (gRunActive 0 -> 1), so DD_RIDE and the "vantage" frame land on the same game frame in
+            # every run (THPS2/3 runs are repeatable from there; the load time before it is not).
+            *([("ctl", "dd showall " + _os.environ["DD_SHOWALL"])] if _os.environ.get("DD_SHOWALL") else []),   # A/B of the zone visibility alone
+            *([("press", "A"), ("ctl", "watch @gRunActive 1")] if _os.environ.get("DD_WATCH") else [("press", "A"), ("wait", 300)]),
+            ("shot", "in_level"),
+            # DD_IDLEWATCH=1: the level_grab question: the skater word the "air" check reads (Skater_PhysState) sampled every 2 frames with no input
+            *([("skater_watch", 90, [("wait", 2)], ["Skater_PhysState"])] if _os.environ.get("DD_IDLEWATCH") else []),
+            ("ctl", "dd"),
+            *([("ctl", f"ramsave {_DD_DIR}/ram_start.bin")] if _os.environ.get("DD_RAMSAVE") else []),
+            # DD_PRE "KEY:frames ...": presses before the ride, with a shot after each (e.g. with --skip-to-restart in DD_ARGS: the pause menu's
+            # SKIP TO RESTART to one of the course's restart points: repeatable spots all over the course)
+            # DD_RESTART "N[:D]" (needs --skip-to-restart in DD_ARGS): the same to restart point N of the RESTARTS list (0 RESTART SKATE,
+            # 1 RE-2P, 2 the first of the course's own). D = DOWNs to SKIP TO RESTART in the pause menu: 3 in career courses (CONTINUE, RETRY,
+            # VIEW GOALS, SKIP TO RESTART: THPS2's two DOWNs open VIEW GOALS here), 2 in the competitions (Rio, Skater Island, Tokyo: CONTINUE,
+            # RESTART COMPETITION, SKIP TO RESTART).
+            *DD_RESTART_PRESSES(_os.environ.get("DD_RESTART", "")),
+            *[s for st in _os.environ.get("DD_PRE", "").split() for s in (("press", st.split(":")[0]), ("wait", int(st.split(":")[1])), ("shot", "pre"))],
+            ("vpad", "attach"),
+            *[s for st in _os.environ.get("DD_RIDE", "").split() for s in (
+                (("ctl", f"vpad axis leftx {st.split(':')[0][2:]}"),) if st.startswith("x=") else (("ctl", f"vpad axis lefty {st.split(':')[0]}"),)) +
+                (("wait", int(st.split(':')[1])),)],
+            *(_DD_SHOT("vantage") if _os.environ.get("DD_WATCH") else []),
+            *([("ctl", "dltrace 1"), ("wait", 2)] if _os.environ.get("DD_VTRACE") else []),
+            *([("ctl", f"ramsave {_DD_DIR}/ram_vantage.bin")] if _os.environ.get("DD_VRAMSAVE") else []),
+            ("ctl", "vpad axis lefty 0"), ("ctl", "vpad axis leftx 0"),
+            *([("press", "START"), ("wait", 45)] if _os.environ.get("DD_PAUSE", "1") == "1" else []),
+            # DD_SETTLE: frames to wait first (THPS3's pause screen does not set the frustum again, so the comparison is made while playing:
+            # standing still after the course's intro camera has settled). gTimeScale cannot freeze it: the game rewrites it every frame.
+            ("wait", int(_os.environ.get("DD_SETTLE") or "0") or 1),
+            *_DD_AB,
+            # DD_CTL "cmd1;cmd2;..." at the paused spot after DD_AB (exploration: "dd factor 2;dltrace 1;dd factor 4;dltrace 1")
+            *[s for c in _os.environ.get("DD_CTL", "").split(";") if c.strip() for s in (("ctl", c.strip()), ("wait", 20))],
+            # DD_BUDGET "CAP [REST PASS MARGIN]": `dd dlbudget` at the paused spot (a shot of the same frame after it) and for the ride
+            # (the byte budget forced to cut: near scenery and the game's own pass must stay)
+            *([("ctl", "dd dlbudget " + _os.environ["DD_BUDGET"]), ("wait", 20), *_DD_SHOT("budget"), ("ctl", "dd")] if _os.environ.get("DD_BUDGET") else []),
+            ("ctl", "dd mode " + _os.environ.get("DD_MODE", "original")),
+            *([("ctl", "dd factor " + _os.environ["DD_FACTOR"])] if _os.environ.get("DD_FACTOR") else []),
+            *([("ctl", "dd testcap " + _os.environ["DD_TESTCAP"])] if _os.environ.get("DD_TESTCAP") else []),
+            ("ctl", "dd reset"),
+            *([("press", "START"), ("wait", 45)] if _os.environ.get("DD_PAUSE", "1") == "1" else []),
+            ("ctl", "vpad axis lefty 32767"), ("wait", 120), ("ctl", "vpad axis lefty 0"), ("wait", 40),
+            *_DD_SHOT("back"),
+            ("dl", 30, 0),
+            ("ctl", "ftime start"),
+            *([("ctl", f"pcap {_os.environ['DD_TOUR']} {_DD_DIR}/tour")] if _os.environ.get("DD_TOUR") else []),   # every Nth composited frame of the ride
+            ("ctl", "vpad axis lefty -32767"),
+            # DD_BURSTS=N: N short bursts of consecutive frames along the ride (b0, b1, ...: pairs of runs line up within a burst)
+            *[s for k in range(int(_os.environ.get("DD_BURSTS") or "0")) for s in (("wait", 40), *_DD_SHOT(f"b{k}"),
+                                                                              ("ctl", f"vpad axis leftx {(-32767, 0, 32767, 0)[k % 4]}"))],
+            ("wait", 150),
+            *_DD_SHOT("ride1"),
+            *[s for k in range(6) for s in (("ctl", f"vpad axis leftx {32767 if k % 2 else -32767}"), ("wait", 20), ("ctl", "vpad axis leftx 0"), ("wait", 20))],
+            *_DD_SHOT("ride2"),
+            ("dl", 30, 0),
+            *([("ctl", "pcap 0")] if _os.environ.get("DD_TOUR") else []),
+            ("ctl", f"ftime stop {_DD_DIR}/ftime.csv"),
+            ("ctl", "vpad axis lefty 0"), ("ctl", "vpad axis leftx 0"), ("wait", 20),
+            ("ctl", "dd"), ("ctl", "stats"), ("ctl", "dd dlprobe"), ("ctl", "dd heap"),
+        ]),
+    ]),
+]
+
+# Heap headroom with the always-allocated 2048-matrix pools (2026-10-22, the private development notes; optin, measurement): one career
+# course (DH_COURSE: list position), loaded, skated ~12 s and ended from the pause menu (END RUN), `dd heap` (low-water marks since the
+# start) after the load, after the ride and after the end. DD_ARGS: extra host args (e.g. "--draw-distance full", "--dd-buffers original").
+_DH_PLAY = [("ctl", "vpad axis lefty -32767"),
+            *[x for k in range(12) for x in (("ctl", f"vpad axis leftx {(-32767, 0, 32767, 0)[k % 4]}"),
+                                             ("ctl", "vpad button a 1"), ("wait", 8), ("ctl", "vpad button a 0"), ("wait", 22))],
+            ("ctl", "vpad axis lefty 0"), ("ctl", "vpad axis leftx 0")]
+SESSIONS += [
+    dict(name="dd-heap", config="dd-heap-config", fresh_pak=True, wav=False, optin=True,
+         args=["--skip-intro", "--hidden", "--unlock-levels"] + _os.environ.get("DD_ARGS", "").split(), scenarios=[
+        ("dd_heap", "heap headroom: one course, `dd heap` low-water marks", [
+            ("wait_for", "title"), ("go", "START", "title", "main_menu"),
+            *CAREER_TO_GOALS[:-1],
+            *[s for _ in range(int(_os.environ.get("DH_COURSE", "0"))) for s in (("press", "DOWN"), ("wait", 30))],
+            ("shot", "select"),
+            ("press", "A"), ("wait", 150), ("press", "A"), ("ctl", "watch @gRunActive 1"), ("wait", 30),
+            ("shot", "in_level"), ("ctl", "dd heap"),
+            ("vpad", "attach"), *_DH_PLAY,
+            ("ctl", "dd heap"), ("ctl", "dd"),
+            ("press", "START"), ("wait", 40), ("menu", "pause", 3), ("press", "A"), ("wait", 150), ("shot", "ended"),
+            ("ctl", "dd heap"),
+        ]),
+    ]),
+]
+
+# Draw distance long run (2026-10-17): several courses back to back in one host, each played DD_LONG_S seconds with stick
+# input, then pause -> END RUN and on through the end-of-run screens (DD_LONG_NAV: presses after END RUN) to the next course. Exploration
+# only (optin): shots at every step, `dd` stats after each course (buffer peaks, governor), `stats` at the end.
+_DDL_COURSES = [int(x) for x in _os.environ.get("DD_LONG_COURSES", "0 1 2").split()]   # increasing list positions
+_DDL_PLAY = lambda s: [("ctl", "vpad axis lefty -32767"), *[x for k in range(max(1, s // 2)) for x in (
+    ("ctl", f"vpad axis leftx {(-32767, 0, 32767, 0)[k % 4]}"), ("ctl", "vpad button a 1"), ("wait", 8), ("ctl", "vpad button a 0"), ("wait", 52))],
+    ("ctl", "vpad axis lefty 0"), ("ctl", "vpad axis leftx 0")]
+_DDL_NAV = [s for p in _os.environ.get("DD_LONG_NAV", "A:120 DOWN:20 DOWN:20 A:150").split() for s in (("press", p.split(":")[0]), ("wait", int(p.split(":")[1])), ("shot", "nav"))]
+SESSIONS += [
+    dict(name="dd-long", config="dd-long-config", fresh_pak=True, wav=False, optin=True,
+         args=["--skip-intro", "--hidden", "--unlock-levels", "--present-size", "480x270", "--refresh", "60"] + _os.environ.get("DD_ARGS", "").split(),
+         scenarios=[
+        ("dd_long", "draw distance: several courses back to back (heap, buffers, governor)", [
+            *([*BOOT_TO_MENU] if "BOOT_TO_MENU" in globals() and _os.environ.get("DD_LONG_BOOT3") else [("wait_for", "title"), ("go", "START", "title", "main_menu")]),
+            *CAREER_TO_GOALS[:-1],
+            *[s for i, c in enumerate(_DDL_COURSES) for s in (
+                # the level select keeps its cursor on the last course: move by the difference
+                *[x for _ in range(c - (_DDL_COURSES[i - 1] if i else 0)) for x in (("press", _os.environ.get("DD_LONG_KEY", "DOWN")), ("wait", 30))],   # a list
+                ("shot", f"select_{i}"),
+                ("press", "A"), ("wait", 150), ("press", "A"), ("ctl", "watch @gRunActive 1"), ("vpad", "attach"),
+                *([] if _os.environ.get("DD_LONG_NODD") else [("ctl", "dd reset")]), ("ctl", "ftime start"),   # DD_LONG_NODD: a host without `dd` (v0.1)
+                *_DDL_PLAY(int(_os.environ.get("DD_LONG_S", "120"))),
+                ("ctl", "ftime stop"), *([] if _os.environ.get("DD_LONG_NODD") else [("ctl", "dd"), ("ctl", "dd heap")]), ("shot", f"played_{i}"),
+                ("press", "START"), ("wait", 40), ("menu", "pause", 4), ("press", "A"), ("wait", 120), ("shot", f"endrun_{i}"),   # END RUN is the 5th entry
+                *_DDL_NAV,
+            )],
+            ("ctl", "stats"), *([] if _os.environ.get("DD_LONG_NODD") else [("ctl", "dd heap")]),
+        ]),
+    ]),
+]
 # Course cycle (src/music.cpp; the THPS2 crash after a few courses, 2026-10-17: THPS3 has the same music player): Foundry, Los Angeles,
 # Suburbia, Airport back to back (Rio is a competition), each ended from the pause menu: END RUN -> statistics -> A -> the END RUN menu ->
 # LEVEL SELECT (third entry). The level select list keeps its cursor on the last course: move by the difference.
@@ -817,3 +959,259 @@ SESSIONS += [load_freeze_session("lf-probe", **_LF, hidden=False, optin=True, li
 # when the machine is overloaded). Before the v0.2 fixes (ERZ decoder, native memset / memcpy) every start was over it.
 LF_GAME_MS = 135.0   # 2026-10-18: 100-112 ms after the fixes, 140-155 ms before (load 3-6)
 SESSIONS += [load_freeze_session("lf-check", **{**_LF, "courses": _LF["courses"][:3]}, limits={"game": 1000.0}, median=("game", LF_GAME_MS))]
+# Draw distance "full" leaves event items to the game (game/draw_distance.cpp): in the Foundry the first valve of the "5 valves" goal
+# swaps two course items when the skater hits it (item 516 hidden, item 517 shown; found by diffing RAM before and after the hit). With
+# `full` on, 517 must stay hidden until the hit (it is hidden at load and named by the goal's script, so not the zone culling's to undo)
+# and be drawn after it, because the game showed it; 516 the other way round. `dd item N` reports the bits and what "full" does with them.
+_VALVE_ROUTE = [("ctl", "vpad axis lefty -32767"), ("wait", 40), ("ctl", "vpad axis leftx 32767"), ("wait", 25), ("ctl", "vpad axis leftx 0"),
+                ("wait", 30), ("ctl", "vpad button a 1"), ("wait", 10), ("ctl", "vpad button a 0"), ("wait", 4), ("ctl", "vpad button x 1"),
+                ("wait", 6), ("ctl", "vpad button x 0"), ("wait", 40), ("ctl", "vpad button a 1"), ("wait", 10), ("ctl", "vpad button a 0"),
+                ("wait", 4), ("ctl", "vpad button b 1"), ("wait", 25), ("ctl", "vpad button b 0"), ("wait", 60), ("ctl", "vpad axis lefty 0")]
+SESSIONS += [dict(name="dd-event", config="dd-event-config", fresh_pak=True, wav=False,
+    args=["--skip-intro", "--hidden", "--draw-distance", "full", "--window", "960x540"], scenarios=[
+    ("dd_event_item", "draw distance full: an item the Foundry's valve goal reveals stays hidden until the valve is hit, then is drawn", [
+        *BOOT_TO_MENU, *CAREER_TO_GOALS, ("go", "A", "goals", "in_level", 90), ("wait_peek", "@gRunActive", 1, 60),
+        ("vpad", "attach"), ("vpress", "rightstick"), ("wait", 20),
+        ("ctl_match", "dd item 517", r"flags 0x0041 zone 0x00 event \d drawn 0"),
+        ("ctl_match", "dd item 516", r"flags 0x0000 .* drawn 1"),
+        ("shot", "before_valve"),
+        ("ctl_same", "dd item 516", r" named (\d+) ", "named"),   # what the course's set-up scripts named (the valve's goal among them)
+        *_VALVE_ROUTE,
+        ("shot", "after_valve"),
+        ("ctl_match", "dd item 517", r"flags 0x0000 .* drawn 1"),
+        ("ctl_match", "dd item 516", r"flags 0x0041 zone 0x00 event 1 drawn 0"),
+    ]),
+    # RETRY runs the course set-up again and rebuilds the item list at the same address and count (review 2026-10-26, finding 7): the zone
+    # record starts again, so item 516 is shown and the game's again, and the event-owned items are exactly what the set-up named (before
+    # the fix the record survived: 516 kept the last run's event ownership, `named` one more).
+    ("dd_event_retry", "pause > RETRY: the valve's items are back as the course starts them; event ownership is the new run's", [
+        ("press", "START"), ("wait", 40), ("menu", "pause", 1), ("press", "A"), ("wait", 150), ("wait_peek", "@gRunActive", 1, 60),
+        ("ctl_match", "dd item 516", r"flags 0x0000 .* drawn 1 named \d+ gen [1-9]"),
+        ("ctl_match", "dd item 517", r"flags 0x0041 .* drawn 0"),
+        ("ctl_same", "dd item 516", r" named (\d+) ", "named"),
+        ("ctl_match", "dd", r"course_starts=[2-9]"),
+    ]),
+    # Governor feedback across a transition (review 2026-10-26, finding 6), deterministic: `dd stale 99` gives a 99 % sample measured across
+    # a transition and one built before it, in one critical section: both dropped, Full keeps its ceiling. `dd feed 99` (the control case)
+    # gives a current one once the settle is over: it panics.
+    ("dd_stale_feedback", "a stale buffer sample after a setting change is dropped; a current one still acts", [
+        ("ctl", "dd mode full"), ("wait", 10), ("ctl", "dd reset"),
+        ("ctl_match", "dd stale 99", r"ceiling=64\.00 .* panics=0 .* stale_dropped=1 settle_dropped=[1-9]"),
+        ("wait", 10),
+        ("ctl_match", "dd feed 99", r"ceiling=(?!64\.00)\d.* panics=1 "),
+        ("ctl_match", "dd mode full", r"ceiling=64\.00 "),
+    ]),
+])]
+
+# Draw distance in a two-player split screen (exploration, optin): the one-pad 2 PLAYER > TRICK ATTACK start of `two-players` (first course),
+# then the same paused (THPS3: standing, DD_PAUSE=0) A/B as dd-probe (DD_AB, DD_TRACE, DD_ARGS, DD_OUT / DD_TAG) and a RAM dump.
+SESSIONS += [
+    dict(name="dd-2p", config="dd-2p-config", fresh_pak=True, wav=False, optin=True,
+         args=["--skip-intro", "--hidden", "--present-size", "960x540", "--aspect", "16:9", "--window", "1280x720",
+               "--refresh", "60"] + _os.environ.get("DD_ARGS", "").split(),
+         scenarios=[
+        ("dd_2p", "draw distance in a two-player split screen: paused spot per factor (frames, traces, buffers)", [
+            *BOOT_TO_MENU,
+            ("menu", "main", 3),
+            ("vpad", "attach"), ("vpress", "leftshoulder"), ("wait", 30),
+            # DD_2P_COURSE=N: N DOWNs at the level select (the 6th A; THPS3 order: 0 Foundry .. 6 Canada, 7 Tokyo; needs --unlock-levels in DD_ARGS)
+            *[x for k in range(8) for x in (
+                *[y for _ in range(int(_os.environ.get("DD_2P_COURSE", "0")) if k == 5 else 0) for y in (("vpress", "dpdown"), ("wait", 20))],
+                ("shot", f"dd_2p_menu{k}"), ("vpress", "a"), ("wait", 150))],
+            ("wait_peek", "@gRunActive", 1, 60),
+            ("wait", int(_os.environ.get("DD_SETTLE") or "60")),
+            ("shot", "dd_2p_level"),
+            # DD_2P_RIDE "lefty:leftx:frames ..." (pad 1, unpaused, before the paused A/B): turning with `dd` readings and a shot after each step
+            *([("ctl", "dd"), ("ctl", "dd reset")] if _os.environ.get("DD_2P_RIDE") else []),
+            *[x for i, st in enumerate(_os.environ.get("DD_2P_RIDE", "").split()) for x in (
+                ("ctl", f"vpad axis lefty {st.split(':')[0]}"), ("ctl", f"vpad axis leftx {st.split(':')[1]}"), ("wait", int(st.split(':')[2])),
+                *_DD_SHOT(f"ride{i:02d}"), ("ctl", "dd"))],
+            *([("ctl", "vpad axis lefty 0"), ("ctl", "vpad axis leftx 0"), ("ctl", "dd"), ("ctl", "dd dlprobe")] if _os.environ.get("DD_2P_RIDE") else []),
+            *([("vpress", "start"), ("wait", 45)] if _os.environ.get("DD_PAUSE", "1") == "1" else []),
+            ("ctl", f"ramsave {_DD_DIR}/ram_vantage.bin"),
+            *_DD_AB,
+            ("ctl", "dd showall auto"), ("ctl", "dd"), ("ctl", "dd heap"), ("ctl", "dd dlprobe"),
+        ]),
+    ]),
+]
+
+# Draw distance at a course start (2026-10-25, the user's Canada reports): the career goals screen, drawn over the course, takes 820 vertices
+# at Full (the game's pool holds 500), a two-player start 1600; when the governor counted the game's 500-vertex pool it panicked to 1x
+# there and kept that ceiling for the whole run, so Full showed only what Original shows (in one and two players). With the bigger vertex
+# pools (game/draw_distance.cpp) Canada starts and stays at Full: no step back since start-up, the factor and ceiling at 64, and the extra
+# passes drawing the course items beyond the game's own distance (runs_hw >= 2: the buildings above the first slope in the user's video).
+_DDC_FULL = r"in_use=64\.00 in_use_min=64\.00 ceiling=64\.00 .* runs_hw=[2-9]\d* mtx_capped=0 backoffs=0 panics=0 cuts=0 "
+_DDC_RIDE = [("ctl", "dd reset"), ("ctl", "vpad axis lefty -32767"),
+             *[x for k in range(6) for x in (("ctl", f"vpad axis leftx {(32767, 0, -32767, 0, 32767, -32767)[k]}"), ("wait", 25))],
+             ("ctl", "vpad axis lefty 0"), ("ctl", "vpad axis leftx 0"), ("wait", 10)]
+SESSIONS += [
+    dict(name="dd-canada", config="dd-canada-config", fresh_pak=True, wav=False,
+         args=["--skip-intro", "--hidden", "--unlock-levels", "--draw-distance", "full", "--window", "960x540"], scenarios=[
+        ("dd_canada", "draw distance full, one player: Canada starts at Full after the goals screen and stays there while skating and turning", [
+            *BOOT_TO_MENU, *CAREER_TO_GOALS[:-1],
+            *[x for _ in range(6) for x in (("press", "DOWN"), ("wait", 20))], ("shot", "select_canada"),
+            ("press", "A"), ("wait", 150), ("shot", "goals"),
+            ("press", "A"), ("wait_peek", "@gRunActive", 1, 60), ("wait", 30), ("shot", "in_level"),
+            ("ctl_match", "dd", _DDC_FULL),
+            ("ctl_match", "dd heap", r"vtx_pool 4096 vtx_cap 4096"),
+            ("vpad", "attach"), *_DDC_RIDE, ("shot", "after_ride"),
+            ("ctl_match", "dd", r"in_use=64\.00 .*ceiling=64\.00 .* runs_hw=[2-9]\d* mtx_capped=0 backoffs=0 panics=0 cuts=0 "),
+        ]),
+    ]),
+    dict(name="dd-canada-2p", config="dd-canada-2p-config", fresh_pak=True, wav=False,
+         args=["--skip-intro", "--hidden", "--unlock-levels", "--draw-distance", "full", "--window", "960x540"], scenarios=[
+        ("dd_canada_2p", "draw distance full, two players (one pad, dd-2p's start): Canada starts at Full and stays there while turning", [
+            *BOOT_TO_MENU,
+            ("menu", "main", 3),
+            ("vpad", "attach"), ("vpress", "leftshoulder"), ("wait", 30),
+            *[x for k in range(8) for x in (*[y for _ in range(6 if k == 5 else 0) for y in (("vpress", "dpdown"), ("wait", 20))],
+                                            *([("shot", "select_canada")] if k == 5 else []), ("vpress", "a"), ("wait", 150))],
+            ("wait_peek", "@gRunActive", 1, 60), ("wait", 30), ("shot", "in_level"),
+            ("ctl_match", "dd", _DDC_FULL),
+            ("ctl_match", "dd heap", r"vtx_pool 4096 vtx_cap 4096"),
+            *_DDC_RIDE, ("shot", "after_ride"),
+            ("ctl_match", "dd", r"in_use=64\.00 .*ceiling=64\.00 .* runs_hw=[2-9]\d* mtx_capped=0 backoffs=0 panics=0 cuts=0 "),
+        ]),
+    ]),
+]
+
+# Draw distance's matrix pools (2026-10-22, the private development notes): with dd_buffers = bigger (the default) the game gets pools of
+# 2048 matrices at every course start and keeps its own cap (420) at `original`, so the setting takes effect at once, both ways; with
+# --dd-buffers original the game's own pools (420) whatever the setting.
+_DDB_TO_LEVEL = [("wait_for", "title"), ("go", "START", "title", "main_menu"), *CAREER_TO_GOALS[:-1], ("press", "A"), ("wait", 150), ("press", "A"), ("ctl", "watch @gRunActive 1"), ("wait", 30)]
+SESSIONS += [
+    dict(name="dd-buffers", config="dd-buffers-config", fresh_pak=True, wav=False,
+         args=["--skip-intro", "--hidden", "--draw-distance", "original", "--dd-buffers", "bigger"], scenarios=[
+        ("dd_buffers_now", "default buffers: pools of 2048 with the game's cap 420 at Original; Full raises the cap at once, Original puts it back", [
+            *_DDB_TO_LEVEL,
+            ("ctl_match", "dd heap", r"mtx_pool 2048 mtx_cap 420 "),
+            ("ctl_match", "dd", r"buffers=bigger .* mtx_cap=420 "),
+            ("ctl", "dd mode full"), ("wait", 30),
+            ("ctl_match", "dd heap", r"mtx_pool 2048 mtx_cap 2048 "),
+            ("ctl_match", "dd", r"mtx_cap=2048 "),
+            ("ctl", "dd mode original"), ("wait", 30),
+            ("ctl_match", "dd heap", r"mtx_pool 2048 mtx_cap 420 .* failed_calls 0 "),
+        ]),
+    ]),
+    dict(name="dd-buffers-own", config="dd-buffers-own-config", fresh_pak=True, wav=False,
+         args=["--skip-intro", "--hidden", "--draw-distance", "original", "--dd-buffers", "original"], scenarios=[
+        ("dd_buffers_own", "--dd-buffers original: the game's own pools (420), at Original and at Full", [
+            *_DDB_TO_LEVEL,
+            ("ctl_match", "dd heap", r"mtx_pool 420 mtx_cap 420 "),
+            ("ctl_match", "dd", r"buffers=original .* mtx_cap=420 "),
+            ("ctl", "dd mode full"), ("wait", 30),
+            ("ctl_match", "dd heap", r"mtx_pool 420 mtx_cap 420 "),
+            ("ctl", "dd mode original"),
+        ]),
+    ]),
+    # Opt-in demo: Rio at Original, then Graphics > Draw Distance > Full in the menu in the middle of the run, a ride: the pool use goes past
+    # the game's 420 with no restart (`dd`: mtx_hw > 420, mtx_capped=0). DD_ARGS: extra host args.
+    dict(name="dd-switch", config="dd-switch-config", fresh_pak=True, wav=False, optin=True, requires="menu",
+         fresh_files=["graphics.cfg"],
+         args=["--skip-intro", "--hidden", "--unlock-levels", "--window", "1280x720", "--draw-distance", "original"] + _os.environ.get("DD_ARGS", "").split(), scenarios=[
+        ("dd_switch", "switch Original -> Full in the menu mid-run: the matrix pool use passes 420 at once", [
+            ("wait_for", "title"), ("go", "START", "title", "main_menu"), *CAREER_TO_GOALS[:-1],
+            *[s for _ in range(8) for s in (("press", "DOWN"), ("wait", 30))],   # Rio: list position 8 with --unlock-levels
+            ("shot", "select"),
+            ("press", "A"), ("wait", 150), ("press", "A"), ("ctl", "watch @gRunActive 1"), ("wait", 30),
+            ("shot", "in_level_original"),
+            ("ctl", "dd reset"), ("wait", 60),
+            ("ctl_match", "dd", r"mode=original .* mtx_cap=420 "),
+            ("ui", "esc"), ("ui_state", "open=1"), ("ui", "tab 2"), ("ui", "click #lbl_dd_full"), ("log", r"draw distance: full"), ("ui", "esc"),
+            ("ctl", "dd reset"),
+            ("vpad", "attach"),
+            ("ctl", "vpad axis lefty -32767"), ("wait", 150),
+            *[s for k in range(6) for s in (("ctl", f"vpad axis leftx {32767 if k % 2 else -32767}"), ("wait", 20), ("ctl", "vpad axis leftx 0"), ("wait", 20))],
+            ("ctl", "vpad axis lefty 0"), ("wait", 30),
+            # pause -> RETRY: the run starts again (the game is not restarted); the course's start view is the busy one
+            ("press", "START"), ("wait", 40), ("press", "DOWN"), ("wait", 10), ("press", "A"), ("wait", 200),
+            ("shot", "in_level_full"),
+            ("ctl_match", "dd", r"mode=full .* mtx_hw=(42[1-9]|4[3-9]\d|[5-9]\d\d|1\d\d\d|20[0-4]\d) mtx_cap=2048 "),   # past the game's 420, no restart
+            ("ctl_match", "dd", r"mtx_capped=0 "),
+            ("ctl", "dd heap"),
+        ]),
+    ]),
+]
+
+# Draw distance stress (2026-10-23, the bigger display lists and the byte budget; optin): Full from the start. Airport (one of THPS3's
+# busiest courses at Full) started DD_STRESS_N times (pause > RETRY runs the course gfx set-up again): each time the first ride with
+# camera turns and quick setting changes (Original, Full, 2x, Full, a few frames apart); then END RUN and the same rides in Foundry and
+# Tokyo (last: a competition, whose pause menu has no RETRY / END RUN at the usual places). The session sets THPS_DD_CANARY=1 (guard bytes
+# after the display lists) and checks that the guards are on (`dd dlprobe` canary 1; until 2026-10-26 it only asked for the variable in
+# this comment, and `canary_bad 0` passed with no guard at all). Expected: no guard word changed, no budget cut at the default budget,
+# no panic, no failed heap request. The forced cuts are dd-cut's.
+_DS_RIDE = [("ctl", "vpad axis lefty -32767"),
+            *[x for k in range(6) for x in (("ctl", f"vpad axis leftx {(-32767, 32767)[k % 2]}"), ("wait", 15), ("ctl", "vpad axis leftx 0"), ("wait", 10))],
+            ("ctl", "dd mode original"), ("wait", 4), ("ctl", "dd mode full"), ("wait", 4), ("ctl", "dd mode 2x"), ("wait", 4), ("ctl", "dd mode full"),
+            *[x for k in range(4) for x in (("ctl", f"vpad axis leftx {(32767, -32767)[k % 2]}"), ("wait", 20))],
+            ("ctl", "vpad axis lefty 0"), ("ctl", "vpad axis leftx 0"), ("wait", 45)]
+_DS_END = [("press", "START"), ("wait", 40), ("menu", "pause", 4), ("press", "A"), ("wait", 120), ("press", "A"), ("wait", 60),
+           ("press", "DOWN"), ("wait", 20), ("press", "DOWN"), ("wait", 20), ("press", "A"), ("wait", 150)]
+_DS_START = [("press", "A"), ("wait", 150), ("press", "A"), ("wait_peek", "@gRunActive", 1, 60), ("vpad", "attach")]
+_DS_CHECK = [("ctl_match", "dd", r"mode=full .* backoffs=\d+ panics=0 cuts=0 "), ("ctl_match", "dd dlprobe", r"canary 1 frames \d+ canary_bad 0 "),
+             ("ctl_match", "dd heap", r" dl 147456 .* dl_fallbacks 0 .* failed_calls 0 ")]
+_DS_KEYS = lambda key, n: [x for _ in range(n) for x in (("press", key), ("wait", 20))]   # THPS3's level select is a vertical list
+SESSIONS += [
+    dict(name="dd-stress", config="dd-stress-config", fresh_pak=True, wav=False, optin=True, env={"THPS_DD_CANARY": "1"},
+         args=["--skip-intro", "--hidden", "--unlock-levels", "--draw-distance", "full", "--dd-buffers", "bigger"] + _os.environ.get("DD_ARGS", "").split(), scenarios=[
+        ("dd_stress", "Airport starts and first rides, setting changes, camera turns; Foundry and Tokyo: guard bytes intact, no cut", [
+            ("wait_for", "title"), ("go", "START", "title", "main_menu"), *CAREER_TO_GOALS[:-1],
+            *_DS_KEYS("DOWN", 4), ("shot", "select_airport"),
+            *_DS_START, ("ctl", "dd reset"),
+            *[x for _ in range(int(_os.environ.get("DD_STRESS_N", "4"))) for x in (
+                *_DS_RIDE, ("shot", "airport_ride"),
+                ("press", "START"), ("wait", 40), ("menu", "pause", 1), ("press", "A"), ("wait", 150), ("vpad", "attach"))],
+            *_DS_RIDE, ("ctl", "dd"), *_DS_CHECK, *_DS_END,
+            *_DS_KEYS("UP", 4), ("shot", "select_foundry"),
+            *_DS_START, *_DS_RIDE, ("shot", "foundry_ride"), ("ctl", "dd"), *_DS_CHECK, *_DS_END,
+            *_DS_KEYS("DOWN", 7), ("shot", "select_tokyo"),
+            *_DS_START, *_DS_RIDE, ("shot", "tokyo_ride"), ("ctl", "dd"), *_DS_CHECK,
+        ]),
+    ]),
+]
+# The display-list budget with a forced cap (review 2026-10-26, findings 9 and 10): Airport at Full with `dd dlbudget CAP` (DD_CUT_CAP,
+# bytes) so tight that only some of the extra passes fit. The nearest extra items are reserved before the first pass with every pass at
+# its bound, so the cuts leave out the farthest and none is made after the passes began (late_cuts=0: before the fix the passes after the
+# first were counted at their average and an expensive far pass left the nearest ones out). The guard bytes are on (THPS_DD_CANARY) and
+# intact. dd-stress checks the default budget (no cut at all).
+_DC_RIDE = [("ctl", "vpad axis lefty -32767"),
+            *[x for k in range(8) for x in (("ctl", f"vpad axis leftx {(-32767, 32767)[k % 2]}"), ("wait", 15), ("ctl", "vpad axis leftx 0"), ("wait", 10))],
+            ("ctl", "vpad axis lefty 0"), ("wait", 20)]
+SESSIONS += [
+    dict(name="dd-cut", config="dd-cut-config", fresh_pak=True, wav=False, env={"THPS_DD_CANARY": "1"},
+         args=["--skip-intro", "--hidden", "--unlock-levels", "--draw-distance", "full", "--window", "960x540"], scenarios=[
+        ("dd_cut", "a forced display-list budget: the farthest extra items are left out before the passes, never the nearest after them", [
+            *_fs_to_run(4, 30), ("vpad", "attach"),
+            ("ctl_match", "dd dlprobe", r"canary 1 "),
+            ("ctl", f"dd dlbudget {_os.environ.get('DD_CUT_CAP', '81920')} 0 0 0"), ("ctl", "dd reset"),
+            *_DC_RIDE,
+            ("ctl_match", "dd", r"cuts=[1-9]\d* cut_items=[1-9]\d* late_cuts=0 "),
+            ("ctl_match", "dd dlprobe", r"canary 1 frames \d+ canary_bad 0 "),
+            ("ctl", "dd dlbudget 0 0 0 0"),
+        ]),
+    ]),
+]
+# The bigger buffers on a constrained heap (review 2026-10-26, finding 1): THPS_DD_HEAP_FREE makes the planning see a free list of the given
+# blocks from the course set-up's start, and every set-up request is taken from that view (`dd heap` view_fail counts the ones it could
+# not have satisfied: the real allocator hangs there). One block of 266,240 bytes holds the game's own set-up (2 x 72 KiB lists, the
+# matrix and vertex pools: 217,392) but not one 144 KiB list more: everything stays the game's size and nothing fails (before the fix the
+# first list was enlarged and the second one's native size no longer fitted). With 600,000 + 900,000 bytes the lists and the matrix pools
+# fit the first block, the bigger vertex pools would take from the second, the one later requests rely on: they stay the game's.
+_DHP_TO_COURSE = [*_fs_to_run(0, 30)]
+SESSIONS += [
+    dict(name="dd-heap-plan", config="dd-heap-plan-config", fresh_pak=True, wav=False, env={"THPS_DD_HEAP_FREE": "266240"},
+         args=["--skip-intro", "--hidden", "--draw-distance", "full", "--window", "960x540"], scenarios=[
+        ("dd_heap_plan_tight", "a free list with room for the game's own set-up only: every buffer the game's size, no request that would fail", [
+            *_DHP_TO_COURSE,
+            ("log", r"draw distance: WARNING no room for a 147456-byte display list \(request 1"),
+            ("ctl_match", "dd heap", r"mtx_pool 420 .* dl 73728 dl_game 73728 .* failed_calls 0 .* vtx_pool 500 .* view_fail 0"),
+        ]),
+    ]),
+    dict(name="dd-heap-plan-room", config="dd-heap-plan-config", fresh_pak=True, wav=False, env={"THPS_DD_HEAP_FREE": "600000,900000"},
+         args=["--skip-intro", "--hidden", "--draw-distance", "full", "--window", "960x540"], scenarios=[
+        ("dd_heap_plan_room", "room for the bigger lists and matrix pools in the first block: those enlarged, the vertex pools left the game's", [
+            *_DHP_TO_COURSE,
+            ("ctl_match", "dd heap", r"mtx_pool 2048 .* dl 147456 dl_game 73728 .* failed_calls 0 .* vtx_pool 500 .* view_fail 0"),
+        ]),
+    ]),
+]
