@@ -38,6 +38,9 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
   each with its HUD inside it, and black bands at the sides.
 - Level starts freeze the picture for about 0.16 s instead of 0.2 s: the shared host unpacks the game's data twice as
   fast and runs the game's `memset` and `memcpy` natively.
+- BUILDING.md: on Windows use `python` instead of `python3` and a `C:/...` path in `THPS3_ROM`, with a link to the Windows
+  test checklist; how `tools/check.sh` shares the build's runtime; `--first-run` needs `build_host.py --split` first; where
+  the test output goes.
 
 ### Fixed
 - With a `controls.cfg` that matches no preset (edited by hand), Xbox B flipped and grabbed at once while skating. The

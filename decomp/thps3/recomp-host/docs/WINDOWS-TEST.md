@@ -104,8 +104,8 @@ Run from a terminal (PowerShell) in `build\cmake`:
       `[game 0x........]` frames and an `innermost game function` line.
 - [ ] Run two instances at once: the second one should fail cleanly.
 - [ ] The regression suite (needs the references to be recorded on this machine, Metal frames are not valid references):
-      `python -I tests\run.py --record`, then `python -I tests\run.py`. Attach the summary table. Expected differences:
-      anything pixel-compared may need `--rerecord`; the `crash_log` step accepts Windows exit codes.
+      `tools/test.sh --record`, then `tools/test.sh`, in Git Bash (BUILDING.md, "Tests"). Attach the summary table.
+      Expected differences: anything pixel-compared may need `--rerecord`; the `crash_log` step accepts Windows exit codes.
 
 ### 4.6 Hardware matrix, if available
 Intel integrated, an NVIDIA and an AMD GPU; D3D12 versus `--api vulkan`.
