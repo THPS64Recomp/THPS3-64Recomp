@@ -7,6 +7,9 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
 
 ## [Unreleased]
 
+### Changed
+- Built on THPS64Host v0.2.0.
+
 ## [0.1.0-preview] - 2026-10-18
 
 An early preview, released next to THPS1 64: Recompiled v0.1.0 and built on THPS64Host v0.1.0. It runs

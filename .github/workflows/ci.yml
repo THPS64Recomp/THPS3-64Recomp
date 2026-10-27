@@ -23,10 +23,10 @@ concurrency:
 
 jobs:
   ci:
-    uses: THPS64Recomp/THPS64Host/.github/workflows/game-ci.yml@v0.1.0
+    uses: THPS64Recomp/THPS64Host/.github/workflows/game-ci.yml@v0.2.0
     with:
       game: thps3
-      host-tag: v0.1.0
+      host-tag: v0.2.0
     secrets:
       # Only while the repositories are private (RELEASING.md); empty, and unused, once they are public.
       THPS64_READ_TOKEN: ${{ secrets.THPS64_READ_TOKEN }}
