@@ -27,9 +27,23 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
   bigger matrix buffers, vertex pools and display lists (144 KiB instead of 72), of which the game uses only its own part at Original.
   It steps back on its own if a frame comes close to filling the game's buffers. `dd_buffers = original` in `graphics.cfg` (`--dd-buffers original`; not in the menu)
   keeps the game's own buffers and memory layout exactly; it needs a restart.
+- Fog (`fog` in `graphics.cfg`, `--fog`; not in the menu or a preset): Original (the default), Soft or Off. The game's
+  fog is thin by design, a haze over the far end of the view (in most courses the last eighth). Soft starts it at 70 %
+  of the draw distance, so far scenery fades in instead of popping in; Off shows a long draw distance most clearly. At
+  Full draw distance the game's fog is far beyond the courses, so Soft looks like Original there. Test sessions
+  `fog-check` (in the suite) and `fog-shot` (opt-in pictures).
 
 ### Changed
 - Built on THPS64Host v0.2.0.
+- Frame Rate (Graphics tab, `refresh` in `graphics.cfg`, `--refresh`) is now Original (30) or 60, default 60. "Match display"
+  and 120 are gone: at 120 Hz (what "Match display" gave on a ProMotion Mac) the picture stuttered. A `graphics.cfg` with
+  `refresh=display` or another rate moves to 60 once, with a log line.
+- Graphics > Preset (`--preset original|enhanced`): Original sets 4:3, the HUD in the 4:3 area, the 4:3 split screen,
+  the black frame, 30 fps and the game's draw distance, as on the N64. Enhanced sets 16:9, the HUD at the screen edges,
+  the wide split screen, Picture Border Fill, 60 fps and Full draw distance. Choosing one replaces your choices in those
+  six rows; Custom shows when they match neither. A new install starts with Enhanced. An existing `graphics.cfg` keeps
+  its values, and a setting it lacks takes the new default (so an older file gets Picture Border Fill and Full draw
+  distance). Fog is in neither preset.
 - Removed the known issue "at 21:9, a far wall can drop out at the right edge". It was reported in THPS1, where it
   doesn't happen in v0.1.0, and the widescreen code involved is shared by all three games.
 - Two-player split screen fills the picture in widescreen (16:9, 21:9, following the window): each player's view is widened
