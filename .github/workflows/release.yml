@@ -33,12 +33,12 @@ concurrency:
 
 jobs:
   release:
-    uses: THPS64Recomp/THPS64Host/.github/workflows/game-release.yml@v0.1.0
+    uses: THPS64Recomp/THPS64Host/.github/workflows/game-release.yml@v0.2.0
     permissions:
       contents: write          # the draft release; the called workflow narrows it per job
     with:
       game: thps3
-      host-tag: v0.1.0
+      host-tag: v0.2.0
       version: ${{ inputs.version }}
       arch: ${{ inputs.arch }}
       replace-assets: ${{ inputs.replace-assets }}
