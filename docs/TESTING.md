@@ -1,6 +1,6 @@
 # Testing THPS3 64: Recompiled
 
-**THPS3 64: Recompiled is an early preview** (v0.1.0-preview). Here is what that means:
+**THPS3 64: Recompiled is an early preview** (v0.2.0-preview). Here is what that means:
 
 - It uses the same shared host as THPS1 64: Recompiled v0.1 and passes its own automated test suite on macOS.
 - It has had much less hand play than THPS1: a few sessions, on one Windows PC and one Mac. Whole parts of the
@@ -68,7 +68,7 @@ Use the [bug report form](https://github.com/THPS64Recomp/THPS3-64Recomp/issues/
 play-testing notes go to [Discussions](https://github.com/THPS64Recomp/THPS3-64Recomp/discussions). Please include:
 
 1. **The game and release**: for example "Tony Hawk's Pro Skater 3, USA". Run the app with `--check-rom FILE` if you are not sure which dump you have.
-2. **The app version**: this one is early preview, v0.1.0-preview; say which zip you downloaded (macOS or Windows).
+2. **The app version**: this one is early preview, v0.2.0-preview; say which zip you downloaded (macOS or Windows).
 3. **Your system**: macOS version and Mac model, or Windows version, CPU and GPU. The display's refresh rate (60 Hz, 120 Hz...).
 4. **Your settings**: attach `general.cfg`, `graphics.cfg` and `controls.cfg` from the config folder (plain text, no game data),
    or name the settings you changed. Controller or keyboard, and which controller.
