@@ -1,6 +1,6 @@
 # Known issues
 
-What isn't finished or hasn't been checked in v0.1.0-preview. "Untested" means the code exists but hasn't been run in that
+What isn't finished or hasn't been checked in v0.2.0-preview. "Untested" means the code exists but hasn't been run in that
 setting. Problems fixed before this release are in the [CHANGELOG](../CHANGELOG.md). Found something that isn't here?
 [TESTING](TESTING.md) says how to report it.
 

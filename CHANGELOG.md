@@ -7,11 +7,16 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
 
 ## [Unreleased]
 
+## [0.2.0-preview] - 2026-10-27
+
+The second early preview, built on THPS64Host v0.2.0: split screen, Picture Border, rebinding, draw distance and the
+Original and Enhanced presets. It runs the USA release of the N64 game, on macOS (universal) and Windows x64.
+
 ### Added
-- Graphics > Picture Border (`border = fill`, `--border fill`): the 3D picture reaches the edges of the window, without the
-  thin black frame the game leaves for a TV's overscan. It shows a little more of the scene at the same size (no zoom). Off by
-  default; menus and loading screens keep their own frame. In a two-player split screen, both views reach the edges
-  too and meet at the game's thin divider line in the middle.
+- Graphics > Picture Border (`border = fill`, `--border fill`): the 3D picture reaches the edges of the window, without
+  the thin black frame the game leaves for a TV's overscan. It shows a little more of the scene at the same size (no
+  zoom). Menus and loading screens keep their own frame. In a two-player split screen, both views reach the edges too
+  and meet at the game's thin divider line in the middle.
 - Rebinding in the settings menu: the Controls tab has a row per N64 input with two controller slots and two keyboard
   slots. Choose a slot and press the new button or key; a button another action uses trades places with it, and
   Default puts a row back. A slot that differs from the layout shows in yellow, and Reset all to default (it asks first)
@@ -20,7 +25,7 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
   to swap players or give a controller either player. One controller on player 2 with the keyboard alone on player 1
   makes a two-player game with one controller. The choice lasts until you quit.
 - Test sessions `menu-controls`, `menu-controls-reload` and `menu-ports` (virtual pads).
-- Draw distance (Graphics tab, `draw_distance` in `graphics.cfg`, `--draw-distance`): Original (the default, the game as it
+- Draw distance (Graphics tab, `draw_distance` in `graphics.cfg`, `--draw-distance`): Original (the game as it
   was), 2x, 4x and Full (the whole course; scenery the game hides by area as you skate, secrets and items a goal
   reveals stay hidden until the game shows them). It applies without a restart. A shorter distance applies at
   once; a longer one reaches the far scenery after a RETRY, the next course or a camera change. Every course start sets up
@@ -94,5 +99,6 @@ less hand play than THPS1; see the README.
 - B didn't go back in menus that draw a 3D scene (Create-a-Skater, the pause menu, the screens over a level).
 - Windows: the settings migration was never saved, and the frame-interpolation time budget never applied.
 
-[Unreleased]: https://github.com/THPS64Recomp/THPS3-64Recomp/compare/v0.1.0-preview...HEAD
+[Unreleased]: https://github.com/THPS64Recomp/THPS3-64Recomp/compare/v0.2.0-preview...HEAD
+[0.2.0-preview]: https://github.com/THPS64Recomp/THPS3-64Recomp/releases/tag/v0.2.0-preview
 [0.1.0-preview]: https://github.com/THPS64Recomp/THPS3-64Recomp/releases/tag/v0.1.0-preview
