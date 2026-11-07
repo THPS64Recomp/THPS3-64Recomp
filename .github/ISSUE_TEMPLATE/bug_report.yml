@@ -24,8 +24,8 @@ body:
     id: version
     attributes:
       label: App version
-      description: The release (for example v0.1.0-preview) and which zip, or the commit if you built it yourself.
-      placeholder: v0.1.0-preview, macOS zip
+      description: The release (for example v0.3.0) and which zip, or the commit if you built it yourself.
+      placeholder: v0.3.0, macOS zip
     validations:
       required: true
   - type: dropdown

@@ -28,7 +28,30 @@ sections (3,937 functions with them, 0 warnings), see [docs/internals/overlays.m
 
 `decomp/thps3/recomp-host/tools/test.sh` starts the host once per session and drives the game by pad input, waiting for
 checkpoints (recognised screens) instead of sleeping. The four launcher scenarios need the optional launcher build, which is not part
-of this repository, and are skipped. Results on the developer (static) build, macOS, 2026-10-15 (the release candidate's full gate):
+of this repository, and are skipped.
+
+**v0.3.0** (the release code; macOS on an Apple M2 Pro and Windows on the PC below, 2026-11-05 and 06; pass / fail / skipped):
+
+| Release | macOS | Windows |
+|---|---|---|
+| USA | 96 / 1 / 8 (the game froze after a test switched MSAA; see the known issues) | 101 / 0 / 4 |
+
+Both platforms also pass the first-run tests, and macOS passes the draw distance sessions at Full. The Windows zip passes the
+bundle check, the full ROM scan and an install test. Hand play on both platforms found nothing beyond the known issues. v0.3
+adds a recorded-ride session and a check that reads each course's zone table.
+
+**v0.2.0** (the release code; macOS on an Apple M2 Pro and Windows on the PC below, 2026-10-27; pass / fail / skipped):
+
+| Release | macOS | Windows |
+|---|---|---|
+| USA | 100 / 0 / 4, plus 1 warn (an air check; passed its rerun) | 101 / 0 / 4 |
+
+Both platforms also pass the first-run tests, the settings and controls config tests, the menu sessions and the draw distance
+sessions at Full (26 / 26 plus 1 warn on macOS, 27 / 27 on Windows). The release zips pass the bundle check, the full ROM
+scan against every dump and an install test. v0.2 adds scenarios for draw distance, Picture Border, the wide split screen,
+the presets and fog, and the menu's row navigation.
+
+**v0.1.0:** results on the developer (static) build, macOS, 2026-10-15 (the release candidate's full gate):
 
 | Pass | Fail | Skipped | Notes |
 |---|---|---|---|
@@ -65,6 +88,8 @@ the Windows zip (unzip, first run builds the game in about 15 s, 30 s of play, e
 **56 passed, 1 warn, 0 failed, 4 skipped** (the warn is
 `level_ollie`, which passed its rerun), including `course-cycle`; the first-run tests pass; the zip passes the bundle check
 and the full ROM scan; the install test passes.
+**Windows, v0.2.0** (2026-10-27, the same PC, the release code): USA **101 passed, 0 failed, 4 skipped**; first-run,
+config and menu tests pass; at Full 27 / 27; the zip passes the bundle check, the full ROM scan and the install test.
 
 ## 4. Small checks that need no ROM [machine]
 

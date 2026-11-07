@@ -1,24 +1,17 @@
 # THPS3 64: Recompiled
 
-A native PC port of *Tony Hawk's Pro Skater 3* for the Nintendo 64, for macOS and Windows, as an **early preview**. Built with
+A native PC port of *Tony Hawk's Pro Skater 3* for the Nintendo 64, for macOS and Windows. Built with
 [N64Recomp](https://github.com/N64Recomp/N64Recomp), [N64ModernRuntime](https://github.com/N64Recomp/N64ModernRuntime)
 and [RT64](https://github.com/rt64/rt64).
 
 ![An impossible in Canada at 21:9](docs/screenshots/canada-21x9.jpg)
-### [Download the latest preview](https://github.com/THPS64Recomp/THPS3-64Recomp/releases) (v0.2.0-preview)
+### [Download the latest release](https://github.com/THPS64Recomp/THPS3-64Recomp/releases/latest) (v0.3.0)
 
-See also: [THPS1 64: Recompiled](https://github.com/THPS64Recomp/THPS1-64Recomp) (v0.2) and
-[THPS2 64: Recompiled](https://github.com/THPS64Recomp/THPS2-64Recomp) (early preview).
+See also: [THPS1 64: Recompiled](https://github.com/THPS64Recomp/THPS1-64Recomp) (v0.3) and
+[THPS2 64: Recompiled](https://github.com/THPS64Recomp/THPS2-64Recomp) (v0.3).
 
 **This repository doesn't contain the game. You need your own dump of the N64 cartridge.** The app builds the game from
 it on the first start.
-
-## Early preview
-
-THPS3 64: Recompiled uses the same host as THPS1 64: Recompiled and passes its own automated test suite, but it has had much
-less hand play. Expect bugs we haven't seen, and back up your `saves/` folder before you rely on a career. Your reports
-decide what gets fixed next: [docs/TESTING.md](docs/TESTING.md) says what to try, and **Unlock All Levels** in
-the Cheats tab gets you to every level quickly.
 
 ## Supported dumps
 
@@ -71,14 +64,14 @@ change a row yourself, the preset shows Custom.
 ## Install
 
 **macOS**
-1. Download `THPS3-64Recomp-v0.2.0-preview-macOS-universal.zip` and unzip it.
+1. Download `THPS3-64Recomp-v0.3.0-macOS-universal.zip` and unzip it.
 2. Move **THPS3 64 Recompiled.app** to Applications.
 3. Open it. macOS blocks the first open because the app isn't notarized:
    - macOS 15+: System Settings > Privacy & Security > **Open Anyway**.
    - macOS 13-14: right-click the app > **Open** > **Open**.
 
 **Windows**
-1. Download `THPS3-64Recomp-v0.2.0-preview-Windows-x64.zip` and extract it to a folder you can write to (not Program Files).
+1. Download `THPS3-64Recomp-v0.3.0-Windows-x64.zip` and extract it to a folder you can write to (not Program Files).
 2. Run `THPS3-64Recomp`. If SmartScreen appears: **More info** > **Run anyway**.
 
 **First start:** choose your ROM dump (or drop it on the window). The app checks it and builds the game, which takes a
@@ -105,7 +98,6 @@ All bindings and the N64 layout: [docs/MANUAL.md](docs/MANUAL.md).
 
 ## Known issues
 
-- An early preview: this list is incomplete.
 - A short freeze when a level loads.
 - Two rare crashes were each seen once in about 60 launches during development. Please send `crash.log` if you see one.
 Full list: [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md).
@@ -114,7 +106,7 @@ Full list: [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md).
 
 - **Bugs:** use the [bug report form](https://github.com/THPS64Recomp/THPS3-64Recomp/issues/new/choose). Attach `crash.log` if the app crashed.
 - **Questions and play-testing notes:** [Discussions](https://github.com/THPS64Recomp/THPS3-64Recomp/discussions).
-- **What to try:** [docs/TESTING.md](docs/TESTING.md).
+- **What to try:** [docs/TESTING.md](docs/TESTING.md). **Unlock All Levels** in the Cheats tab gets you to every level quickly.
 - Never attach your ROM or files built from it.
 
 ## Building from source
