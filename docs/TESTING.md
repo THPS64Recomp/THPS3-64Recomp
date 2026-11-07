@@ -1,14 +1,10 @@
 # Testing THPS3 64: Recompiled
 
-**THPS3 64: Recompiled is an early preview** (v0.2.0-preview). Here is what that means:
-
-- It uses the same shared host as THPS1 64: Recompiled v0.1 and passes its own automated test suite on macOS.
-- It has had much less hand play than THPS1: a few sessions, on one Windows PC and one Mac. Whole parts of the
-  game (the park editor, split-screen play, replays, most competitions) have never been played through by a person on this build.
-- Expect bugs we have not seen. A crash, a freeze, a wrong picture or a lost save are all possible, so back up
-  `saves/` before you rely on a career.
-- It is labelled a preview so that players can help test it now.
-  Your reports decide what gets fixed before a v0.1 of this game.
+THPS3 64: Recompiled v0.3.0 is the third public release and the first full release, after two early previews. It uses
+the same shared host as THPS1 64: Recompiled and passes its own automated test suite on macOS and Windows, but it has had much less
+hand play than THPS1: a few sessions, on one Windows PC and one Mac. Whole parts of the game (the park editor,
+split-screen play, replays, most competitions) have never been played through by a person on this build. If you play it,
+your reports are the most useful thing you can send us.
 
 Please read [KNOWN-ISSUES](KNOWN-ISSUES.md) first, so you can skip what we already know about.
 
@@ -68,7 +64,7 @@ Use the [bug report form](https://github.com/THPS64Recomp/THPS3-64Recomp/issues/
 play-testing notes go to [Discussions](https://github.com/THPS64Recomp/THPS3-64Recomp/discussions). Please include:
 
 1. **The game and release**: for example "Tony Hawk's Pro Skater 3, USA". Run the app with `--check-rom FILE` if you are not sure which dump you have.
-2. **The app version**: this one is early preview, v0.2.0-preview; say which zip you downloaded (macOS or Windows).
+2. **The app version**: this one is v0.3.0; say which zip you downloaded (macOS or Windows).
 3. **Your system**: macOS version and Mac model, or Windows version, CPU and GPU. The display's refresh rate (60 Hz, 120 Hz...).
 4. **Your settings**: attach `general.cfg`, `graphics.cfg` and `controls.cfg` from the config folder (plain text, no game data),
    or name the settings you changed. Controller or keyboard, and which controller.

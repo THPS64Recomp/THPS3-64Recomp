@@ -7,8 +7,15 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-07
+
+The first full release, after two early previews. Built on THPS64Host v0.3.0. It runs the USA release of the N64 game, on
+macOS (universal) and Windows x64.
+
 ### Changed
 - Built on THPS64Host v0.3.0.
+- No longer an early preview. A few parts of the game still haven't been played through by hand on this build;
+  [Known issues](docs/KNOWN-ISSUES.md#untested) lists them.
 - Full draw distance restores only the zones the game hides for distance. Zones that hold course state, and boxes it can't
   classify, stay under the game's control.
 - Tests: test rides claim a controller before steering, and an opt-in session records and replays a complete ride.
@@ -111,6 +118,7 @@ less hand play than THPS1; see the README.
 - B didn't go back in menus that draw a 3D scene (Create-a-Skater, the pause menu, the screens over a level).
 - Windows: the settings migration was never saved, and the frame-interpolation time budget never applied.
 
-[Unreleased]: https://github.com/THPS64Recomp/THPS3-64Recomp/compare/v0.2.0-preview...HEAD
+[Unreleased]: https://github.com/THPS64Recomp/THPS3-64Recomp/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/THPS64Recomp/THPS3-64Recomp/releases/tag/v0.3.0
 [0.2.0-preview]: https://github.com/THPS64Recomp/THPS3-64Recomp/releases/tag/v0.2.0-preview
 [0.1.0-preview]: https://github.com/THPS64Recomp/THPS3-64Recomp/releases/tag/v0.1.0-preview

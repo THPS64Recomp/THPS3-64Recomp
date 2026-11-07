@@ -1,15 +1,8 @@
 # Known issues
 
-What isn't finished or hasn't been checked in v0.2.0-preview. "Untested" means the code exists but hasn't been run in that
+What isn't finished or hasn't been checked in v0.3.0. "Untested" means the code exists but hasn't been run in that
 setting. Problems fixed before this release are in the [CHANGELOG](../CHANGELOG.md). Found something that isn't here?
 [TESTING](TESTING.md) says how to report it.
-
-## Early preview
-
-THPS3 64: Recompiled is an **early preview**. It shares its host with THPS1 64: Recompiled v0.1 and passes its own automated
-suite, but it has had much less hand play than THPS1, so this list is likely incomplete. These parts of the game haven't
-been played through by a person on this build: the park editor, split screen in a level, replays and most competitions.
-[TESTING](TESTING.md) lists what we'd like you to try.
 
 ## Platforms
 
@@ -44,10 +37,12 @@ been played through by a person on this build: the park editor, split screen in 
 - **Frame interpolation** at 60 Hz and up pairs 97 % or more of the moving parts between game frames in
   the Foundry (the first career level) and the menus. Other levels have cars and other moving objects
   whose pairing hasn't been checked. Replays and cutscenes are untested.
+- **Sliding text moves in steps at 60 fps**: text that slides across the screen, such as a course title or a menu sliding
+  in, moves only on the game's own frames (30 per second), so it looks less smooth than the 3D picture.
 - **The special meter at `hud = original`** has a top line, a tall left tick, a short right stub and bars hanging below.
   The game itself draws it that way, at every aspect ratio and frame rate.
-- **Each level start freezes the picture briefly** while the game loads the level (about 0.16 s, 0.2 s in the first
-  preview), and the **attract demo** has short stalls every ten seconds or so.
+- **Each level start freezes the picture briefly** while the game loads the level (about 0.16 s), and the
+  **attract demo** has short stalls every ten seconds or so.
 - RT64 **compiles shaders the first time an effect appears**, which causes short hitches.
 - With the window hidden or covered, the app stops presenting frames; the game keeps running.
 - Apple GPUs have no 8x MSAA; asking for it turns MSAA off.
@@ -60,11 +55,15 @@ been played through by a person on this build: the park editor, split screen in 
 
 ## Stability
 
-- **A crash in the graphics layer** (inside RT64, seen in all three games under load) is fixed in this release.
-  A 30-minute soak on macOS found no crash or hang.- **Two intermittent crashes** were each seen once in about 60 launches during development, on a loaded machine, and not in
+- **A crash in the graphics layer** (inside RT64, seen in all three games under load) was fixed in v0.2.
+  A 30-minute soak on macOS found no crash or hang.
+- **Two intermittent crashes** were each seen once in about 60 launches during development, on a loaded machine, and not in
   a later soak of 50 launches: a SIGBUS in the game's asset cache shortly after the start, and a SIGSEGV inside RT64
   (`processDisplayLists`). The second looks like the graphics-layer crash above and is probably fixed with it. If you see
   either, please attach `crash.log`.
+- **Switching MSAA in the settings menu froze the game once** in about 16 automated test runs on macOS: the picture and
+  sound stopped. It hasn't happened again, on Windows or in hand play. If it happens to you, restart the app and please
+  report it.
 
 ## Input and saves
 
