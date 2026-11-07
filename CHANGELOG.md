@@ -11,11 +11,13 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
 - Built on THPS64Host v0.3.0.
 - Full draw distance restores only the zones the game hides for distance. Zones that hold course state, and boxes it can't
   classify, stay under the game's control.
+- Tests: test rides claim a controller before steering, and an opt-in session records and replays a complete ride.
 
 ### Fixed
 - Scene objects use the active draw distance in their shared model pass. At Full, the Canada trees and trunk no longer appear
   late, while course-state visibility stays under the game's control.
 - Eight courses had frames the renderer split into many separate passes; they are drawn in one pass again.
+- Skating tests read the actual physics dispatch state; a missing ollie now fails instead of warning.
 
 ## [0.2.0-preview] - 2026-10-27
 
