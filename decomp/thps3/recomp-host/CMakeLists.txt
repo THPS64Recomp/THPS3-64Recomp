@@ -18,4 +18,6 @@ set(THPS_HOST_ROOT "${THPS_HOST_ROOT}" CACHE PATH "The shared host tree (THPS64H
 if (NOT EXISTS "${THPS_HOST_ROOT}/host/cmake/thps_host.cmake")
     message(FATAL_ERROR "The shared host (THPS64Host) was not found: run `git submodule update --init`, or pass -DTHPS_HOST_ROOT=<a THPS64Host checkout>")
 endif()
+# The THPS2/3 engine's draw distance is shared in the Host (game/draw_distance.cpp here has the profile and what only THPS3's symbols allow).
+set(THPS_GAME_EXTRA_SOURCES "${THPS_HOST_ROOT}/host/src/draw_distance_thps23.cpp")
 include("${THPS_HOST_ROOT}/host/cmake/thps_host.cmake")

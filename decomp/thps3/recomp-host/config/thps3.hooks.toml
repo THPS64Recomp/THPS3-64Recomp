@@ -100,6 +100,12 @@ text = "if (thps_cheat_is_on(rdram, ctx)) { ctx->r2 = 1; return; }"
 func = "World_DrawItems"
 text = "if (thps_world_draw_items(rdram, ctx)) return;"
 
+# Scene-object models use their own distance thresholds after sphere culling. Extend their
+# squared-distance divisor for this draw only; keep the game's visibility gates and Original mode.
+[[patches.hook]]
+func = "SceneObjects_Draw"
+text = "if (thps_scene_objects_draw(rdram, ctx)) return;"
+
 # Draw distance (game/draw_distance.cpp): Mesh_QueueEmit(renderer) draws one pass's mesh queue (845 entries) and depth-sorted list of
 # translucent meshes (96); past either size the game drops meshes. World_DrawDeferredItems(list) draws the items World_DrawItems put on its
 # list of 64, which the game does not check. The hooks note how full the three are, so the governor can keep a longer far plane from

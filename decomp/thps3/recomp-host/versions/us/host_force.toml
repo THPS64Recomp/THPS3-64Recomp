@@ -37,6 +37,10 @@ splits = [0x800BA520]   # recomp_check candidate: pointed to from data (0x80017A
 "0x800436F0" = "World_FindItem"   # (list, name checksum) -> item: how the scripts' per-item commands (show / hide / kill by name) and the gameplay code find an item
 "0x800D6B44" = "Music_LoadSong"   # = THPS2 USA 0x800D1E34 (same code, only the string/table addresses differ)
 
+"0x800A5CDC" = "Trig_SkipCommand"   # (command) -> next command, 0 at terminator
+
+"0x80031D44" = "SceneObjects_Draw"   # shared auxiliary scene-object render pass; preserves object and mesh visibility gates
+
 [overlay_force]
 "t2_intro+0x18C" = "Ovl_IntroUpdate"  # the intro screen's update (legal text + logos; LOG H4)
 

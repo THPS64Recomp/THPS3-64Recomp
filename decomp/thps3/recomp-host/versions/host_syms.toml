@@ -11,12 +11,13 @@ funcs = [
     "thps_osSetEventMesg", "thps_osPiRawStartDma", "thps_osAiGetStatus", "thps_osContGetQuery",
     "Cop2_GteLoad", "Pi_DmaThread", "GameEntry",
     "View_SetFrustum", "View_ComputeCullPlanes", "MsgBox_SetText", "Level_IsSelectable", "Cheat_IsOn",
-    "World_DrawItems", "Mem_Alloc", "World_SetVisibilityInBox", "World_FindItem",
+    "World_DrawItems", "SceneObjects_Draw", "Mem_Alloc", "World_SetVisibilityInBox", "World_FindItem",
     "Gfx_SetupCourse",        # (): the course gfx set-up (each course start, RETRY): display lists, matrix and vertex pools (draw distance: bigger display lists)
     "Mesh_PassBegin", "Mesh_PassEnd",   # (renderer): a renderer pass begins (batching on) / ends (flush, Mesh_QueueEmit, lists emptied)
     "Mesh_QueueEmit",         # (renderer): draws the renderer's mesh queue and sorted list of one pass (draw distance: game/draw_distance.cpp)
     "World_DrawDeferredItems",   # (item list): draws the course items World_DrawItems put aside (draw distance: game/draw_distance.cpp)
     "Music_LoadSong",         # (player, song): the music player copies the next song over the playing one (src/music.cpp)
+    "Trig_SkipCommand",       # walks one trigger command for zone classification
 ]
 
 # Functions inside the front-end overlays, named by decomp/common/overlay_recomp.py from each class's
@@ -34,6 +35,7 @@ addr = [
     "gTimeScale",             # physics step word (256 = 1/30 s; every frame; Slow-Nic divides it by 4 during tricks)
     "gRunActive",             # word: 1 only while a level run is being played (unpaused); 0 in the front end, pause and every screen over the level (src/run_state.cpp)
     "gFarPlane",              # draw distance: the gameplay camera's far plane (float; set with the level's fog)
+    "gModelDistanceScale",     # squared-distance divisor for scene-object model entry selection
     "gWorldFarCache",         # draw distance: the camera code's copy of gFarPlane for the world view (cleared to make it set that view again)
     "gDlBufSize",             # draw distance: bytes per top-level display list buffer (word)
     "gDlBufs",                # draw distance: the two display list buffers (pointers)
@@ -48,6 +50,7 @@ addr = [
     "gDeferredItemCount",     # draw distance: World_DrawItems' list of items drawn after the others (64 pointers just before this count, unchecked)
     "gMusNumChannels",        # MUS library: number of channels (word)
     "gMusChannels",           # MUS library: pointer to the channel records (304 bytes each; src/music.cpp)
+    "gTrgNodes", "gTrgNodeCount", # loaded trigger-node table and count
 ]
 
 # Struct field offsets (versions/<class>/data_syms.toml [field]): layout can differ between builds.
