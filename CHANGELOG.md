@@ -7,6 +7,9 @@ All notable changes to THPS3 64: Recompiled are listed here. The format is based
 
 ## [Unreleased]
 
+### Added
+- An opt-in Windows mapping and N64-layout instructions for one measured generic N64 USB pad.
+
 ## [0.3.0] - 2026-11-07
 
 The first full release, after two early previews. Built on THPS64Host v0.3.0. It runs the USA release of the N64 game, on

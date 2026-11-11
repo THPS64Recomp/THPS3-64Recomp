@@ -109,6 +109,42 @@ manual: down then up). Revert is R (RB on a controller) as you land from the air
   input, so they can't lock up. In a level, player 2 stays empty. OPTIONS > CONTROLLER TWO opens only for the second
   controller's A, as in the original game.
 
+### Generic N64 USB pad on Windows (opt-in)
+
+For the measured red transparent `0079:0006` pad layout, download
+[generic-n64recomp-windows.txt](controllers/generic-n64recomp-windows.txt) and start the app from PowerShell:
+
+```powershell
+$previousProfile = $env:SDL_GAMECONTROLLERCONFIG_FILE
+$env:SDL_GAMECONTROLLERCONFIG_FILE = (Resolve-Path '.\generic-n64recomp-windows.txt').Path
+try {
+    & '.\THPS3-64Recomp.exe' --controls-preset n64
+} finally {
+    $env:SDL_GAMECONTROLLERCONFIG_FILE = $previousProfile
+}
+```
+
+Run this in the extracted release folder, with the downloaded profile beside the executable. The variable lasts only
+for this launch; the previous value is restored afterward. **N64 layout** is required: this command resets the bindings to that layout, with the previous file kept
+as `controls.cfg.bak`. Later launches keep the chosen layout; load this SDL profile each time you want to use the pad.
+
+This maps physical A/B to SDL A/X, L/R to left shoulder/right trigger, Z to left trigger, the stick to left X/Y, the
+D-pad to hat 0, and the four C buttons to signed right-stick axes. Thus physical B sends N64 B and physical R sends only
+N64 R. With the default **Face buttons** layout, B would instead send C-left (flip). Physical C buttons retain their N64
+roles. In THPS3, A also performs ollie and B also performs flip.
+Press Start once to claim player 1. Use **Esc** for recomp settings: this pad has no measured Back/Select button, and Z is
+kept as Z.
+
+Only use this file if your raw inputs match: A/B/Start/Z/L/R = buttons 5/4/9/8/6/7; C up/right/down/left = buttons
+0/1/2/3; stick = axes 0/1; D-pad = hat 0. Windows SDL2 reported 4 axes, 12 buttons and 1 hat. Other clones can share
+VID/PID and CRCs, so this is deliberately not an automatic rule. Unset the variable or close the shell to stop loading it.
+
+Measurements and attribution: [MatyMeatBoy/MeatBoyControllers](https://github.com/MatyMeatBoy/MeatBoyControllers),
+2026-11-11: user-recorded physical button assignments, native SDL device identification and virtual SDL mapping tests.
+CRC variants `8630`, `8e4f` and `79be` were observed with SDL2 2.32.10, SDL2 2.26.3 and SDL3 3.4.18 respectively. The SDL3
+entry is retained for that measured identity; the port uses SDL2. The mapping has **not been physically play-tested in
+THPS3**. It does not apply deadzone calibration.
+
 ## The settings menu
 
 **Esc** (controller: **Back**) opens the settings menu over the game. Its tabs:
