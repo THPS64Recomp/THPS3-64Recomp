@@ -139,7 +139,7 @@ Only use this file if your raw inputs match: A/B/Start/Z/L/R = buttons 5/4/9/8/6
 0/1/2/3; stick = axes 0/1; D-pad = hat 0. Windows SDL2 reported 4 axes, 12 buttons and 1 hat. Other clones can share
 VID/PID and CRCs, so this is deliberately not an automatic rule. Unset the variable or close the shell to stop loading it.
 
-Measurements and attribution: [MatyMeatBoy/MeatBoyControllers](https://github.com/MatyMeatBoy/MeatBoyControllers),
+Measurements supplied by MatyMeatBoy,
 2026-11-11: user-recorded physical button assignments, native SDL device identification and virtual SDL mapping tests.
 CRC variants `8630`, `8e4f` and `79be` were observed with SDL2 2.32.10, SDL2 2.26.3 and SDL3 3.4.18 respectively. The SDL3
 entry is retained for that measured identity; the port uses SDL2. The mapping has **not been physically play-tested in
